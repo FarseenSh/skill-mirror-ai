@@ -257,7 +257,7 @@ export default function WorkspacePage() {
           };
           
           // Create a new array instead of modifying the previous one
-          const updatedMessages = [...messages, contextMessage];
+          const updatedMessages: Message[] = [...messages, contextMessage];
           setMessages(updatedMessages);
           
           // Automatically suggest discussing the task
@@ -283,7 +283,7 @@ export default function WorkspacePage() {
       };
       
       // Create a new array instead of modifying the previous one
-      const messagesWithUserMessage = [...messages, userMessage];
+      const messagesWithUserMessage: Message[] = [...messages, userMessage];
       setMessages(messagesWithUserMessage);
       
       if (!customMessage) {
@@ -295,9 +295,9 @@ export default function WorkspacePage() {
       
       // Update message status to "sent"
       setTimeout(() => {
-        const updatedMessages = messages.map(msg => 
+        const updatedMessages: Message[] = messages.map(msg => 
           msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sending' 
-            ? { ...msg, status: 'sent' } 
+            ? { ...msg, status: 'sent' as MessageStatus } 
             : msg
         );
         
@@ -311,9 +311,9 @@ export default function WorkspacePage() {
       );
       
       // Update message status to "delivered"
-      const messagesWithDeliveredStatus = messages.map(msg => 
+      const messagesWithDeliveredStatus: Message[] = messages.map(msg => 
         msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sent' 
-          ? { ...msg, status: 'delivered' } 
+          ? { ...msg, status: 'delivered' as MessageStatus } 
           : msg
       );
       
@@ -337,9 +337,9 @@ export default function WorkspacePage() {
       }
       
       // Update message status to "read"
-      const messagesWithReadStatus = messages.map(msg => 
+      const messagesWithReadStatus: Message[] = messages.map(msg => 
         msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'delivered' 
-          ? { ...msg, status: 'read' } 
+          ? { ...msg, status: 'read' as MessageStatus } 
           : msg
       );
       
