@@ -59,7 +59,7 @@ export function NotificationCenter() {
             id: n.id,
             title: n.title,
             message: n.message,
-            type: n.type,
+            type: n.type as 'info' | 'success' | 'warning' | 'error',
             createdAt: n.created_at,
             read: n.read,
             link: n.link
@@ -94,7 +94,7 @@ export function NotificationCenter() {
           id: payload.new.id,
           title: payload.new.title,
           message: payload.new.message,
-          type: payload.new.type,
+          type: payload.new.type as 'info' | 'success' | 'warning' | 'error',
           createdAt: payload.new.created_at,
           read: false,
           link: payload.new.link
