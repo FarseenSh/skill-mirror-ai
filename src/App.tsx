@@ -22,6 +22,7 @@ import DashboardPage from "@/pages/app/DashboardPage";
 import WorkspacePage from "@/pages/app/WorkspacePage";
 import SkillsDashboardPage from "@/pages/app/SkillsDashboardPage";
 import ProjectsPage from "@/pages/app/ProjectsPage";
+import ProjectDetailsPage from "@/pages/app/ProjectDetailsPage";
 import ResourcesPage from "@/pages/app/ResourcesPage";
 import CareerPathsPage from "@/pages/app/CareerPathsPage";
 import InterviewPracticePage from "@/pages/app/InterviewPracticePage";
@@ -79,6 +80,7 @@ const App = () => (
                 <Route path="workspace" element={<WorkspacePage />} />
                 <Route path="skills-dashboard" element={<SkillsDashboardPage />} />
                 <Route path="projects" element={<ProjectsPage />} />
+                <Route path="projects/:projectId" element={<ProjectDetailsPage />} />
                 <Route path="resources" element={<ResourcesPage />} />
                 <Route path="career-paths" element={<CareerPathsPage />} />
                 <Route path="interview-practice" element={<InterviewPracticePage />} />

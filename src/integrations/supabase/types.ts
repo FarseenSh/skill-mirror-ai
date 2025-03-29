@@ -213,35 +213,161 @@ export type Database = {
           },
         ]
       }
+      project_skills: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_id: string | null
+          skill_level: number
+          skill_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          skill_level: number
+          skill_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          skill_level?: number
+          skill_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_submissions: {
+        Row: {
+          content: string
+          feedback: string | null
+          id: string
+          project_id: string | null
+          submission_type: string
+          submitted_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          feedback?: string | null
+          id?: string
+          project_id?: string | null
+          submission_type: string
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          feedback?: string | null
+          id?: string
+          project_id?: string | null
+          submission_type?: string
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_submissions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_subtasks: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          project_id: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          project_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          project_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_subtasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
+          assigned_to: string | null
           created_at: string
           deadline: string | null
           description: string | null
+          feedback: string | null
           id: string
+          portfolio_visible: boolean
           priority: string
+          progress: number
+          project_type: string
           status: string
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          assigned_to?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
+          feedback?: string | null
           id?: string
+          portfolio_visible?: boolean
           priority?: string
+          progress?: number
+          project_type?: string
           status: string
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          assigned_to?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
+          feedback?: string | null
           id?: string
+          portfolio_visible?: boolean
           priority?: string
+          progress?: number
+          project_type?: string
           status?: string
           title?: string
           updated_at?: string

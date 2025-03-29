@@ -148,6 +148,228 @@ export const projectsManager = {
       
     if (error) throw error;
     return data;
+  },
+  
+  // New functions for enhanced project management
+  getProjectById: async (projectId: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', projectId)
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  getAssignedProjects: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('assigned_to', userId);
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  getProjectsByStatus: async (userId: string, status: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', status);
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  getProjectsByType: async (userId: string, projectType: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('project_type', projectType);
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  acceptProject: async (projectId: string, userId: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .update({
+        assigned_to: userId,
+        status: 'in_progress',
+      })
+      .eq('id', projectId)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  updateProjectProgress: async (projectId: string, progress: number) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ progress })
+      .eq('id', projectId)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  updateProjectStatus: async (projectId: string, status: string) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ status })
+      .eq('id', projectId)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  deleteProject: async (projectId: string) => {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
+      
+    if (error) throw error;
+    return true;
+  }
+};
+
+// Project skills management
+export const projectSkillsManager = {
+  getProjectSkills: async (projectId: string) => {
+    const { data, error } = await supabase
+      .from('project_skills')
+      .select('*')
+      .eq('project_id', projectId);
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  addProjectSkill: async (projectSkill: any) => {
+    const { data, error } = await supabase
+      .from('project_skills')
+      .insert([projectSkill])
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  deleteProjectSkill: async (skillId: string) => {
+    const { error } = await supabase
+      .from('project_skills')
+      .delete()
+      .eq('id', skillId);
+      
+    if (error) throw error;
+    return true;
+  }
+};
+
+// Project subtasks management
+export const projectSubtasksManager = {
+  getProjectSubtasks: async (projectId: string) => {
+    const { data, error } = await supabase
+      .from('project_subtasks')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: true });
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  addSubtask: async (subtask: any) => {
+    const { data, error } = await supabase
+      .from('project_subtasks')
+      .insert([subtask])
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  updateSubtaskStatus: async (subtaskId: string, status: string) => {
+    const { data, error } = await supabase
+      .from('project_subtasks')
+      .update({ status })
+      .eq('id', subtaskId)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  deleteSubtask: async (subtaskId: string) => {
+    const { error } = await supabase
+      .from('project_subtasks')
+      .delete()
+      .eq('id', subtaskId);
+      
+    if (error) throw error;
+    return true;
+  }
+};
+
+// Project submissions management
+export const projectSubmissionsManager = {
+  getProjectSubmissions: async (projectId: string) => {
+    const { data, error } = await supabase
+      .from('project_submissions')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('submitted_at', { ascending: false });
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  getUserSubmissions: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('project_submissions')
+      .select('*, projects(*)')
+      .eq('user_id', userId)
+      .order('submitted_at', { ascending: false });
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  addSubmission: async (submission: any) => {
+    const { data, error } = await supabase
+      .from('project_submissions')
+      .insert([submission])
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  updateSubmissionFeedback: async (submissionId: string, feedback: string) => {
+    const { data, error } = await supabase
+      .from('project_submissions')
+      .update({ feedback })
+      .eq('id', submissionId)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
   }
 };
 
