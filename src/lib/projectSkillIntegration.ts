@@ -1,4 +1,3 @@
-
 import { Project, ProjectSkill, ProjectSubmission } from "@/types/project";
 import { Skill } from "@/data/skillsData";
 import { skillsManager, projectsManager, projectSkillsManager } from "./supabase";
@@ -64,7 +63,14 @@ export const recommendProjectsForSkillGaps = async (
     const projectsWithSkills = await Promise.all(
       incompleteProjects.map(async project => {
         const skills = await projectSkillsManager.getProjectSkills(project.id);
-        return { ...project, skills };
+        return { 
+          ...project, 
+          skills,
+          // Type assertion to ensure status matches our enum
+          status: project.status as 'pending' | 'in_progress' | 'completed' | 'blocked',
+          project_type: project.project_type as 'assigned' | 'recommended' | 'personal',
+          priority: project.priority as 'low' | 'medium' | 'high'
+        };
       })
     );
     
@@ -77,14 +83,7 @@ export const recommendProjectsForSkillGaps = async (
             gap.gap > 0
           )
         )
-      )
-      .map(project => ({
-        ...project,
-        // Type assertion to ensure status matches our enum
-        status: project.status as 'pending' | 'in_progress' | 'completed' | 'blocked',
-        project_type: project.project_type as 'assigned' | 'recommended' | 'personal',
-        priority: project.priority as 'low' | 'medium' | 'high'
-      }));
+      );
     
     // Sort by most relevant (covering most skill gaps with highest gaps)
     return recommendedProjects.sort((a, b) => {

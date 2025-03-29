@@ -1,4 +1,3 @@
-
 export interface Project {
   id: string;
   user_id: string;
@@ -14,6 +13,7 @@ export interface Project {
   assigned_to: string | null;
   feedback: string | null;
   portfolio_visible: boolean;
+  skills?: ProjectSkill[]; // Add optional skills property for project recommendations
 }
 
 export interface ProjectSkill {

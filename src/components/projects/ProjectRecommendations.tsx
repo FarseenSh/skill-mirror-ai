@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { Project } from "@/types/project";
+import { Project, ProjectSkill } from "@/types/project";
 import { findSkillGaps, recommendProjectsForSkillGaps } from "@/lib/projectSkillIntegration";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -172,7 +172,7 @@ export function ProjectRecommendations() {
                   <div className="mt-3">
                     <h4 className="text-xs font-medium mb-1">Skills you'll improve:</h4>
                     <div className="flex flex-wrap gap-1">
-                      {project.skills.map(skill => {
+                      {project.skills && project.skills.map(skill => {
                         const matchingGap = skillGaps.find(
                           gap => gap.skill.toLowerCase() === skill.skill_name.toLowerCase()
                         );

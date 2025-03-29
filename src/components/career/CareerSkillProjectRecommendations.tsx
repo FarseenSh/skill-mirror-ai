@@ -9,6 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { estimateCareerTimeline } from "@/lib/projectSkillIntegration";
 import { skillsManager } from "@/lib/supabase";
+import { Skill } from "@/data/skillsData";
 
 interface CareerSkillProjectRecommendationsProps {
   targetRole: {
@@ -36,11 +37,23 @@ export function CareerSkillProjectRecommendations({ targetRole }: CareerSkillPro
         setLoading(true);
         
         // Load user skills
-        const skills = await skillsManager.getUserSkills(user.id);
-        setUserSkills(skills);
+        const dbSkills = await skillsManager.getUserSkills(user.id);
+        
+        // Map database skills to the Skill type format
+        const mappedSkills = dbSkills.map(skill => ({
+          id: skill.id,
+          name: skill.name,
+          category: skill.category,
+          proficiency: skill.proficiency,
+          targetProficiency: skill.target_proficiency,
+          // Additional properties for the Skill type
+          recentImprovement: false
+        }));
+        
+        setUserSkills(mappedSkills);
         
         // Calculate timeline based on skills
-        const timelineEstimate = estimateCareerTimeline(targetRole, skills);
+        const timelineEstimate = estimateCareerTimeline(targetRole, mappedSkills);
         setTimeline(timelineEstimate);
       } catch (error) {
         console.error("Error loading skills:", error);
