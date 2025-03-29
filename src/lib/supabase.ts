@@ -1,4 +1,3 @@
-
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
 
@@ -223,38 +222,121 @@ export const resourcesManager = {
 
 // Interview practice sessions
 export const interviewsManager = {
-  getUserInterviews: async (userId: string) => {
-    const { data, error } = await supabase
-      .from('interviews')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+  getUserInterviews: async (userId, status = null) => {
+    try {
+      let query = supabase
+        .from('interviews')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+        
+      if (status) {
+        query = query.eq('status', status);
+      }
+        
+      const { data, error } = await query;
+        
+      if (error) throw error;
       
-    if (error) throw error;
-    return data;
+      // Parse the settings field for each interview if it exists
+      return data.map(interview => {
+        try {
+          if (interview.settings && typeof interview.settings === 'string') {
+            interview.settings = JSON.parse(interview.settings);
+          }
+        } catch (e) {
+          console.error("Error parsing interview settings:", e);
+          interview.settings = {};
+        }
+        return interview;
+      });
+    } catch (error) {
+      console.error('Error fetching interviews:', error);
+      return [];
+    }
   },
-  
-  createInterview: async (interview: any) => {
-    const { data, error } = await supabase
-      .from('interviews')
-      .insert([interview])
-      .select()
-      .single();
+
+  createInterview: async (interviewData) => {
+    try {
+      const { data, error } = await supabase
+        .from('interviews')
+        .insert(interviewData)
+        .select()
+        .single();
       
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Error creating interview:', error);
+      throw error;
+    }
   },
-  
-  updateInterview: async (interviewId: string, updates: any) => {
-    const { data, error } = await supabase
-      .from('interviews')
-      .update(updates)
-      .eq('id', interviewId)
-      .select()
-      .single();
+
+  getInterviewById: async (interviewId) => {
+    try {
+      const { data, error } = await supabase
+        .from('interviews')
+        .select('*')
+        .eq('id', interviewId)
+        .single();
       
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      
+      // Parse the settings field if it exists
+      try {
+        if (data.settings && typeof data.settings === 'string') {
+          data.settings = JSON.parse(data.settings);
+        }
+      } catch (e) {
+        console.error("Error parsing interview settings:", e);
+        data.settings = {};
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching interview:', error);
+      throw error;
+    }
+  },
+
+  updateInterview: async (interviewId, updates) => {
+    try {
+      // If settings is an object, stringify it
+      if (updates.settings && typeof updates.settings === 'object') {
+        updates.settings = JSON.stringify(updates.settings);
+      }
+      
+      const { data, error } = await supabase
+        .from('interviews')
+        .update(updates)
+        .eq('id', interviewId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Error updating interview:', error);
+      throw error;
+    }
+  },
+
+  deleteInterview: async (interviewId) => {
+    try {
+      const { error } = await supabase
+        .from('interviews')
+        .delete()
+        .eq('id', interviewId);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting interview:', error);
+      throw error;
+    }
   }
 };
 

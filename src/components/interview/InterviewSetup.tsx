@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Briefcase, UserCheck, Database, User } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { Briefcase, UserCheck, Database, User, Clock, Target, FileQuestion } from "lucide-react";
 
 interface InterviewSetupProps {
   onStartInterview: (setupData: any) => void;
@@ -19,6 +22,10 @@ export function InterviewSetup({ onStartInterview, onCancel }: InterviewSetupPro
   const [interviewType, setInterviewType] = useState("technical");
   const [interviewer, setInterviewer] = useState("technical_male");
   const [difficultyLevel, setDifficultyLevel] = useState("mid");
+  const [focusAreas, setFocusAreas] = useState<string[]>(["algorithms"]);
+  const [timeLimit, setTimeLimit] = useState(30); // in minutes
+  const [enableTimeLimit, setEnableTimeLimit] = useState(false);
+  const [customQuestions, setCustomQuestions] = useState("");
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,8 +33,48 @@ export function InterviewSetup({ onStartInterview, onCancel }: InterviewSetupPro
       jobTitle,
       interviewType,
       interviewer,
-      difficultyLevel
+      difficultyLevel,
+      focusAreas,
+      timeLimit: enableTimeLimit ? timeLimit : null,
+      customQuestions: customQuestions.trim() ? customQuestions.split('\n').filter(q => q.trim()) : []
     });
+  };
+  
+  // Focus areas based on interview type
+  const getFocusAreas = () => {
+    switch (interviewType) {
+      case "technical":
+        return [
+          { id: "algorithms", name: "Algorithms & Data Structures" },
+          { id: "coding", name: "Coding Implementation" },
+          { id: "debugging", name: "Debugging & Problem Solving" },
+          { id: "architecture", name: "Software Architecture" }
+        ];
+      case "behavioral":
+        return [
+          { id: "teamwork", name: "Teamwork & Collaboration" },
+          { id: "leadership", name: "Leadership & Initiative" },
+          { id: "challenges", name: "Overcoming Challenges" },
+          { id: "communication", name: "Communication Skills" }
+        ];
+      case "system_design":
+        return [
+          { id: "scalability", name: "Scalability & Performance" },
+          { id: "database", name: "Database Design" },
+          { id: "apis", name: "API Design" },
+          { id: "architecture", name: "System Architecture" }
+        ];
+      default:
+        return [];
+    }
+  };
+  
+  // Reset focus areas when interview type changes
+  const handleInterviewTypeChange = (type) => {
+    setInterviewType(type);
+    // Set default focus area based on the new type
+    const areas = getFocusAreas();
+    setFocusAreas(areas.length > 0 ? [areas[0].id] : []);
   };
   
   return (
@@ -56,7 +103,7 @@ export function InterviewSetup({ onStartInterview, onCancel }: InterviewSetupPro
             <Label htmlFor="interview-type">Interview Type</Label>
             <Select 
               value={interviewType} 
-              onValueChange={setInterviewType}
+              onValueChange={handleInterviewTypeChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select interview type" />
@@ -82,6 +129,31 @@ export function InterviewSetup({ onStartInterview, onCancel }: InterviewSetupPro
                 </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          {/* Focus Areas */}
+          <div className="space-y-2">
+            <Label>Focus Areas</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {getFocusAreas().map(area => (
+                <div key={area.id} className="flex items-center space-x-2">
+                  <Switch 
+                    id={`focus-${area.id}`} 
+                    checked={focusAreas.includes(area.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFocusAreas(prev => [...prev, area.id]);
+                      } else {
+                        setFocusAreas(prev => prev.filter(id => id !== area.id));
+                      }
+                    }}
+                  />
+                  <Label htmlFor={`focus-${area.id}`} className="cursor-pointer">
+                    {area.name}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
           
           {/* Interviewer Selection */}
@@ -173,6 +245,54 @@ export function InterviewSetup({ onStartInterview, onCancel }: InterviewSetupPro
                 <SelectItem value="senior">Senior Level</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          {/* Time Limit */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="time-limit" className="flex items-center">
+                <Clock className="h-4 w-4 mr-2" />
+                Time Limit
+              </Label>
+              <Switch 
+                id="enable-time" 
+                checked={enableTimeLimit}
+                onCheckedChange={setEnableTimeLimit}
+              />
+            </div>
+            
+            {enableTimeLimit && (
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm">Time per question: {timeLimit} minutes</span>
+                </div>
+                <Slider
+                  value={[timeLimit]}
+                  min={1}
+                  max={60}
+                  step={1}
+                  onValueChange={(value) => setTimeLimit(value[0])}
+                />
+              </div>
+            )}
+          </div>
+          
+          {/* Custom Questions */}
+          <div className="space-y-2">
+            <Label htmlFor="custom-questions" className="flex items-center">
+              <FileQuestion className="h-4 w-4 mr-2" />
+              Custom Questions (Optional)
+            </Label>
+            <Textarea 
+              id="custom-questions"
+              placeholder="Enter your own questions (one per line)"
+              value={customQuestions}
+              onChange={(e) => setCustomQuestions(e.target.value)}
+              className="h-24"
+            />
+            <p className="text-xs text-muted-foreground">
+              If provided, these will be added to the generated questions.
+            </p>
           </div>
         </CardContent>
         

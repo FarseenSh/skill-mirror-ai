@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
-import { Mic, MicOff, Play, Pause, SkipBack, Volume2, Timer, AlertCircle, FileText, MessageSquare } from "lucide-react";
+import { Mic, MicOff, Play, Pause, SkipBack, Volume2, Timer, AlertCircle, FileText, MessageSquare, Clock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { elevenLabsService, ELEVEN_LABS_VOICES } from "@/services/elevenLabsService";
 import { interviewsManager } from "@/lib/supabase";
@@ -37,11 +37,14 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState([]);
+  const [relatedQuestions, setRelatedQuestions] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [userResponse, setUserResponse] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [volume, setVolume] = useState(80);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [timerIntervalId, setTimerIntervalId] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -57,17 +60,28 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         title: `${interviewData.jobTitle} - ${interviewData.interviewType}`,
         job_title: interviewData.jobTitle,
         interviewer_type: interviewData.interviewer,
+        settings: JSON.stringify({
+          difficultyLevel: interviewData.difficultyLevel,
+          focusAreas: interviewData.focusAreas,
+          timeLimit: interviewData.timeLimit,
+          customQuestions: interviewData.customQuestions
+        }),
         status: "in_progress",
       });
       
-      // Generate interview questions based on job title and interview type
-      const questionPrompt = `Generate 5 ${interviewData.interviewType} interview questions for a ${interviewData.difficultyLevel} ${interviewData.jobTitle} position. 
+      // Generate interview questions based on job title, interview type, and focus areas
+      const focusAreasText = interviewData.focusAreas.length > 0 
+        ? `with focus on ${interviewData.focusAreas.join(", ")}` 
+        : "";
+        
+      const questionPrompt = `Generate 5 ${interviewData.interviewType} interview questions for a ${interviewData.difficultyLevel} ${interviewData.jobTitle} position ${focusAreasText}. 
         Format as JSON array with objects containing: 
         { 
           "question": "question text", 
           "context": "what this question is testing", 
           "keyPoints": ["key points to address"], 
-          "exampleStructure": "example response structure" 
+          "exampleStructure": "example response structure",
+          "relatedQuestions": ["2-3 related follow-up questions"]
         }`;
       
       const systemPrompt = AI_PERSONALITIES.INTERVIEWER;
@@ -80,11 +94,33 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       // Parse questions from the response
       const parsedQuestions = JSON.parse(questionsText);
       
-      setCurrentInterview(savedInterview);
+      // Add any custom questions from the user
+      if (interviewData.customQuestions && interviewData.customQuestions.length > 0) {
+        for (const customQ of interviewData.customQuestions) {
+          parsedQuestions.push({
+            question: customQ,
+            context: "Custom question provided by you",
+            keyPoints: ["This is a custom question - use your own judgment on how to approach it"],
+            exampleStructure: "No specific structure provided",
+            relatedQuestions: []
+          });
+        }
+      }
+      
+      setCurrentInterview({
+        ...savedInterview,
+        settings: JSON.parse(savedInterview.settings || '{}')
+      });
       setQuestions(parsedQuestions);
       setCurrentQuestion(parsedQuestions[0]);
       setCurrentQuestionIndex(0);
+      setRelatedQuestions(parsedQuestions[0].relatedQuestions || []);
       setInterviewState("active");
+      
+      // Set up timer if enabled
+      if (interviewData.timeLimit) {
+        setTimeRemaining(interviewData.timeLimit * 60); // Convert to seconds
+      }
       
       // Generate audio for the first question
       const voiceId = getVoiceIdForInterviewer(interviewData.interviewer);
@@ -230,11 +266,24 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
   
   // Move to next/previous question
   const goToNextQuestion = () => {
+    // Clear the timer if it's running
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId);
+      setTimerIntervalId(null);
+    }
+    
     if (currentQuestionIndex < questions.length - 1) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       setCurrentQuestion(questions[nextIndex]);
+      setRelatedQuestions(questions[nextIndex].relatedQuestions || []);
       setUserResponse("");
+      
+      // Reset the timer for the next question if time limit is enabled
+      if (currentInterview?.settings?.timeLimit) {
+        setTimeRemaining(currentInterview.settings.timeLimit * 60);
+        startTimer();
+      }
       
       // Generate audio for the next question
       const voiceId = currentInterview ? 
@@ -249,10 +298,23 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
   };
   
   const goToPreviousQuestion = () => {
+    // Clear the timer if it's running
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId);
+      setTimerIntervalId(null);
+    }
+    
     if (currentQuestionIndex > 0) {
       const prevIndex = currentQuestionIndex - 1;
       setCurrentQuestionIndex(prevIndex);
       setCurrentQuestion(questions[prevIndex]);
+      setRelatedQuestions(questions[prevIndex].relatedQuestions || []);
+      
+      // Reset the timer for the previous question if time limit is enabled
+      if (currentInterview?.settings?.timeLimit) {
+        setTimeRemaining(currentInterview.settings.timeLimit * 60);
+        startTimer();
+      }
       
       // Generate audio for the previous question
       const voiceId = currentInterview ? 
@@ -261,6 +323,40 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       
       generateQuestionAudio(questions[prevIndex].question, voiceId);
     }
+  };
+  
+  // Start timer countdown
+  const startTimer = () => {
+    // Clear existing timer if any
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId);
+    }
+    
+    const intervalId = window.setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev === null || prev <= 0) {
+          clearInterval(intervalId);
+          toast({
+            title: "Time's up!",
+            description: "Your time for this question has ended.",
+            variant: "destructive",
+          });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    setTimerIntervalId(intervalId);
+    return intervalId;
+  };
+  
+  // Format time remaining
+  const formatTimeRemaining = (seconds) => {
+    if (seconds === null) return null;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
   
   // Submit feedback for the interview
@@ -300,18 +396,36 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     if (audioRef.current) {
       audioRef.current.onended = () => {
         setIsPlaying(false);
+        
+        // Start the timer when the question audio finishes playing (if time limit enabled)
+        if (timeRemaining !== null && currentInterview?.settings?.timeLimit && !timerIntervalId) {
+          startTimer();
+        }
       };
     }
-  }, [audioRef.current]);
+  }, [audioRef.current, timeRemaining, currentInterview?.settings?.timeLimit]);
   
-  // Cleanup audio URLs when component unmounts
+  // Cleanup audio URLs and timers when component unmounts
   useEffect(() => {
     return () => {
       if (audioUrl) {
         URL.revokeObjectURL(audioUrl);
       }
+      
+      if (timerIntervalId) {
+        clearInterval(timerIntervalId);
+      }
     };
-  }, [audioUrl]);
+  }, [audioUrl, timerIntervalId]);
+  
+  // Load related questions for the current question
+  useEffect(() => {
+    if (currentQuestion && currentQuestion.relatedQuestions) {
+      setRelatedQuestions(currentQuestion.relatedQuestions);
+    } else {
+      setRelatedQuestions([]);
+    }
+  }, [currentQuestion]);
   
   // Render different states of the interview
   if (interviewState === "setup") {
@@ -359,6 +473,12 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
               Question {currentQuestionIndex + 1}
             </Badge>
             <div className="flex items-center space-x-2">
+              {timeRemaining !== null && (
+                <div className={`flex items-center space-x-1 mr-4 ${timeRemaining < 60 ? 'text-red-500' : ''}`}>
+                  <Clock className="h-4 w-4" />
+                  <span>{formatTimeRemaining(timeRemaining)}</span>
+                </div>
+              )}
               <Button 
                 variant="ghost" 
                 size="icon"
@@ -413,6 +533,17 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
               <li key={index}>{point}</li>
             ))}
           </ul>
+          
+          {relatedQuestions && relatedQuestions.length > 0 && (
+            <>
+              <h4 className="font-medium mt-4 mb-2">Related Follow-up Questions:</h4>
+              <ul className="list-disc pl-5 text-muted-foreground">
+                {relatedQuestions.map((question, index) => (
+                  <li key={index}>{question}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
         
         {/* Response Section */}
