@@ -1,115 +1,71 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { AuthProvider } from "@/components/AuthProvider";
-import { useAuth } from "@/components/AuthProvider";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/components/AuthProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Landing Page
-import LandingPage from "@/pages/LandingPage";
+// Pages
+import LandingPage from '@/pages/LandingPage';
+import NotFound from '@/pages/NotFound';
+import LoginPage from '@/pages/auth/LoginPage';
+import SignUpPage from '@/pages/auth/SignUpPage';
+import AuthLayout from '@/pages/auth/AuthLayout';
+import AppLayout from '@/components/AppLayout';
+import DashboardPage from '@/pages/app/DashboardPage';
+import ProjectsPage from '@/pages/app/ProjectsPage';
+import PortfolioPage from '@/pages/app/PortfolioPage';
+import ResourcesPage from '@/pages/app/ResourcesPage';
+import SettingsPage from '@/pages/app/SettingsPage';
+import SkillsDashboardPage from '@/pages/app/SkillsDashboardPage';
+import CareerPathsPage from '@/pages/app/CareerPathsPage';
+import WorkspacePage from '@/pages/app/WorkspacePage';
+import InterviewPracticePage from '@/pages/app/InterviewPracticePage';
+import ProjectDetailsPage from '@/pages/app/ProjectDetailsPage';
 
-// Auth Pages
-import AuthLayout from "@/pages/auth/AuthLayout";
-import LoginPage from "@/pages/auth/LoginPage";
-import SignUpPage from "@/pages/auth/SignUpPage";
-
-// App Pages
-import AppLayout from "@/components/AppLayout";
-import DashboardPage from "@/pages/app/DashboardPage";
-import WorkspacePage from "@/pages/app/WorkspacePage";
-import SkillsDashboardPage from "@/pages/app/SkillsDashboardPage";
-import ProjectsPage from "@/pages/app/ProjectsPage";
-import ProjectDetailsPage from "@/pages/app/ProjectDetailsPage";
-import ResourcesPage from "@/pages/app/ResourcesPage";
-import CareerPathsPage from "@/pages/app/CareerPathsPage";
-import InterviewPracticePage from "@/pages/app/InterviewPracticePage";
-import SettingsPage from "@/pages/app/SettingsPage";
-
-// 404 Page
-import NotFound from "@/pages/NotFound";
-
+// Create a React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
-      retry: 1,
+      staleTime: 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
 });
 
-// Protected Route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground transition-colors duration-300">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg font-medium">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth/login" />;
-  }
-
-  return <>{children}</>;
-};
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system">
-      <TooltipProvider>
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="skill-mirror-theme">
+      <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+          <Router>
             <Routes>
-              {/* Public routes */}
               <Route path="/" element={<LandingPage />} />
-
-              {/* Auth routes */}
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" element={<LoginPage />} />
                 <Route path="signup" element={<SignUpPage />} />
               </Route>
-
-              {/* Protected app routes */}
-              <Route
-                path="/app"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="/app" element={<AppLayout />}>
+                <Route index element={<DashboardPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="workspace" element={<WorkspacePage />} />
-                <Route path="skills-dashboard" element={<SkillsDashboardPage />} />
                 <Route path="projects" element={<ProjectsPage />} />
                 <Route path="projects/:projectId" element={<ProjectDetailsPage />} />
+                <Route path="portfolio" element={<PortfolioPage />} />
                 <Route path="resources" element={<ResourcesPage />} />
-                <Route path="career-paths" element={<CareerPathsPage />} />
-                <Route path="interview-practice" element={<InterviewPracticePage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="skills" element={<SkillsDashboardPage />} />
+                <Route path="career" element={<CareerPathsPage />} />
+                <Route path="workspace" element={<WorkspacePage />} />
+                <Route path="interview" element={<InterviewPracticePage />} />
               </Route>
-
-              {/* 404 - Not Found */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
+          </Router>
+          <Toaster />
         </AuthProvider>
-      </TooltipProvider>
+      </QueryClientProvider>
     </ThemeProvider>
-  </QueryClientProvider>
-);
+  );
+}
 
 export default App;
