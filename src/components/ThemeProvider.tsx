@@ -2,6 +2,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 type Theme = "dark" | "light" | "system";
 
@@ -14,11 +15,13 @@ type ThemeProviderProps = {
 type ThemeProviderState = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  resolvedTheme: "light" | "dark"; // The actual applied theme
 };
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
+  resolvedTheme: "light",
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -32,28 +35,65 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
+  const { toast } = useToast();
 
-  useEffect(() => {
+  // Function to apply theme to the document
+  const applyTheme = (newTheme: Theme) => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+    // Determine the actual theme (light or dark)
+    let resolvedTheme: "light" | "dark";
+    
+    if (newTheme === "system") {
+      resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-      root.classList.add(systemTheme);
-      return;
+    } else {
+      resolvedTheme = newTheme;
     }
 
-    root.classList.add(theme);
+    root.classList.add(resolvedTheme);
+    setResolvedTheme(resolvedTheme);
+
+    // Add smooth transition to body when changing themes
+    document.body.style.transition = "background-color 0.3s ease, color 0.3s ease";
+
+    return resolvedTheme;
+  };
+
+  useEffect(() => {
+    applyTheme(theme);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => {
+      if (theme === "system") {
+        applyTheme("system");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, [theme]);
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    resolvedTheme,
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
+      const resolvedTheme = applyTheme(newTheme);
+      
+      // Show toast notification when theme changes
+      toast({
+        title: `${resolvedTheme === "dark" ? "Dark" : "Light"} theme activated`,
+        description: resolvedTheme === "dark" 
+          ? "Switched to dark theme for reduced eye strain."
+          : "Switched to light theme for better visibility.",
+        duration: 1500,
+      });
     },
   };
 
