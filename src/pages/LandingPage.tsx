@@ -45,7 +45,7 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link to="/auth/signup">
-              <Button size="sm" className="animate-pulse shadow-lg hover:shadow-skill-purple/50 transition-all duration-300 hover:scale-105">
+              <Button size="sm" className="shadow-lg hover:shadow-skill-purple/50 transition-all duration-300 hover:scale-105">
                 Get Started
               </Button>
             </Link>
@@ -129,22 +129,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Brand Logos Section */}
-        <section className="py-12 bg-muted/30">
-          <div className="container px-4">
-            <div className="text-center mb-6">
-              <p className="text-muted-foreground">Trusted by professionals from companies like</p>
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60">
-              <div className="h-6 w-20 bg-foreground/70 rounded animate-pulse"></div>
-              <div className="h-8 w-24 bg-foreground/70 rounded animate-pulse delay-100"></div>
-              <div className="h-7 w-28 bg-foreground/70 rounded animate-pulse delay-200"></div>
-              <div className="h-6 w-20 bg-foreground/70 rounded animate-pulse delay-300"></div>
-              <div className="h-8 w-24 bg-foreground/70 rounded animate-pulse delay-400"></div>
-            </div>
-          </div>
-        </section>
-
         {/* Features Section - Enhanced with Animations */}
         <section id="features" className="py-24 bg-muted/30">
           <div className="container px-4">
@@ -164,7 +148,7 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-100">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <MessagesSquare className="h-6 w-6 text-primary" />
                 </div>
@@ -174,7 +158,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-200">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <Briefcase className="h-6 w-6 text-primary" />
                 </div>
@@ -184,7 +168,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-300">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <LineChart className="h-6 w-6 text-primary" />
                 </div>
@@ -194,7 +178,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-400">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <Lightbulb className="h-6 w-6 text-primary" />
                 </div>
@@ -204,7 +188,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-500">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <Award className="h-6 w-6 text-primary" />
                 </div>
@@ -214,7 +198,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg animate-fade-in delay-600">
+              <div className="feature-card transform hover:translate-y-[-5px] transition-all duration-300 hover:shadow-lg scroll-fade-in">
                 <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit">
                   <LayoutDashboard className="h-6 w-6 text-primary" />
                 </div>
@@ -249,7 +233,7 @@ export default function LandingPage() {
               {/* Connection Line */}
               <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-skill-blue via-skill-purple to-skill-deepPurple transform -translate-y-1/2 z-0"></div>
               
-              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border animate-fade-in delay-300 hover:shadow-xl transition-all duration-300">
+              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border scroll-slide-in hover:shadow-xl transition-all duration-300">
                 <div className="mb-6 rounded-full bg-skill-blue/10 p-4">
                   <div className="rounded-full bg-skill-blue text-white w-14 h-14 flex items-center justify-center font-bold text-2xl">1</div>
                 </div>
@@ -262,7 +246,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border animate-fade-in delay-500 hover:shadow-xl transition-all duration-300">
+              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border scroll-slide-in hover:shadow-xl transition-all duration-300">
                 <div className="mb-6 rounded-full bg-skill-purple/10 p-4">
                   <div className="rounded-full bg-skill-purple text-white w-14 h-14 flex items-center justify-center font-bold text-2xl">2</div>
                 </div>
@@ -275,7 +259,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border animate-fade-in delay-700 hover:shadow-xl transition-all duration-300">
+              <div className="relative z-10 flex flex-col items-center text-center bg-card p-8 rounded-xl shadow-lg border border-border scroll-slide-in hover:shadow-xl transition-all duration-300">
                 <div className="mb-6 rounded-full bg-skill-deepPurple/10 p-4">
                   <div className="rounded-full bg-skill-deepPurple text-white w-14 h-14 flex items-center justify-center font-bold text-2xl">3</div>
                 </div>
@@ -289,7 +273,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="mt-16 text-center animate-fade-in delay-800">
+            <div className="mt-16 text-center scroll-scale-in">
               <Link to="/auth/signup">
                 <Button size="lg" className="bg-gradient-to-r from-skill-blue to-skill-purple text-white hover:shadow-lg hover:shadow-skill-purple/30 transition-all duration-300 hover:scale-105 group">
                   Start Your First Simulation
@@ -319,7 +303,7 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative animate-fade-in delay-300 hover:translate-y-[-5px] transition-all duration-300">
+              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative scroll-fade-in hover:translate-y-[-5px] transition-all duration-300">
                 <div className="absolute top-0 right-0 transform translate-x-3 -translate-y-3">
                   <div className="text-6xl text-primary/10 font-serif">"</div>
                 </div>
@@ -340,7 +324,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative animate-fade-in delay-500 hover:translate-y-[-5px] transition-all duration-300">
+              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative scroll-fade-in hover:translate-y-[-5px] transition-all duration-300">
                 <div className="absolute top-0 right-0 transform translate-x-3 -translate-y-3">
                   <div className="text-6xl text-primary/10 font-serif">"</div>
                 </div>
@@ -361,7 +345,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative animate-fade-in delay-700 hover:translate-y-[-5px] transition-all duration-300">
+              <div className="bg-card p-8 rounded-xl shadow-md hover:shadow-xl transition-duration-300 border border-border relative scroll-fade-in hover:translate-y-[-5px] transition-all duration-300">
                 <div className="absolute top-0 right-0 transform translate-x-3 -translate-y-3">
                   <div className="text-6xl text-primary/10 font-serif">"</div>
                 </div>
@@ -394,13 +378,13 @@ export default function LandingPage() {
         
           <div className="container px-4 text-center relative z-10">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6 drop-shadow-md animate-fade-in">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6 drop-shadow-md scroll-fade-in">
                 Ready to Transform Your Professional Skills?
               </h2>
-              <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90 animate-fade-in delay-100">
+              <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90 scroll-fade-in">
                 Join thousands of professionals using SkillMirror to advance their careers through realistic workplace simulations.
               </p>
-              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20 mb-10 shadow-xl animate-fade-in delay-200">
+              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20 mb-10 shadow-xl scroll-scale-in">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left mb-6">
                   <div className="flex items-start">
                     <div className="mr-3 rounded-full bg-white/20 p-1">

@@ -98,6 +98,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    scroll-behavior: smooth;
   }
 }
 
@@ -184,6 +185,26 @@
   to { opacity: 1; }
 }
 
+/* Scroll animations */
+.scroll-fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-slide-in {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-scale-in {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.8s ease-out;
+}
+
+/* Helper classes for transition delays */
 .delay-100 {
   animation-delay: 0.1s;
 }

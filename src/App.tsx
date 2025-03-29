@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import { useAuth } from "@/components/AuthProvider";
+import ScrollAnimation from "@/components/ScrollAnimation";
 
 // Landing Page
 import LandingPage from "@/pages/LandingPage";
@@ -54,6 +55,7 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Sonner />
+          <ScrollAnimation />
           <BrowserRouter>
             <Routes>
               {/* Public routes */}
