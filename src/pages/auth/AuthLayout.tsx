@@ -6,7 +6,7 @@ export default function AuthLayout() {
   return (
     <div className="min-h-screen">
       <div className="absolute top-4 right-4">
-        <ThemeToggle />
+        <ThemeToggle variant="minimal" />
       </div>
       <Outlet />
     </div>

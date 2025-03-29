@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LandingPage() {
   return (
@@ -40,6 +41,7 @@ export default function LandingPage() {
             </a>
           </nav>
           <div className="flex items-center gap-4">
+            <ThemeToggle variant="minimal" />
             <Link to="/auth/login">
               <Button variant="ghost" size="sm" className="transition-transform duration-300 hover:scale-105">
                 Log in

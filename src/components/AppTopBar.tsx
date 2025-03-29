@@ -28,7 +28,7 @@ export function AppTopBar() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
           </span>
         </Button>
-        <ThemeToggle />
+        <ThemeToggle variant="dropdown" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
