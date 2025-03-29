@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -51,7 +50,7 @@ export function InterviewDashboard({ onStartNewInterview, onContinueInterview }:
     switch (status) {
       case "completed":
         return (
-          <Badge variant="success" className="ml-2">
+          <Badge variant="outline" className="ml-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
             <CheckCircle2 className="w-3 h-3 mr-1" />
             Completed
           </Badge>

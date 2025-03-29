@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { Star, MessageSquare, Sparkles, CheckCircle2, AlertTriangle, BookOpen, LineChart } from "lucide-react";
+import { 
+  Star, 
+  MessageSquare, 
+  Sparkles, 
+  CheckCircle2, 
+  AlertTriangle, 
+  BookOpen, 
+  LineChart,
+  FileText, 
+  Video 
+} from "lucide-react";
 import { claudeService, CLAUDE_MODELS, AI_PERSONALITIES } from "@/services/claudeService";
 
 interface InterviewFeedbackProps {
@@ -21,17 +30,14 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
   const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState<any>(null);
   
-  // Generate feedback on component mount
   useEffect(() => {
     generateFeedback();
   }, []);
   
-  // Generate AI feedback for the interview
   const generateFeedback = async () => {
     try {
       setIsLoading(true);
       
-      // Create prompt for Claude to analyze the interview
       const prompt = `
         You are an expert interview coach analyzing a practice interview session.
         
@@ -81,14 +87,12 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
         }
       `;
       
-      // Generate feedback with Claude
       const feedbackResponse = await claudeService.generateResponse(
         [{ role: "user", content: prompt }],
         AI_PERSONALITIES.SUPPORTIVE_MENTOR,
         CLAUDE_MODELS.CLAUDE_3_HAIKU
       );
       
-      // Parse the JSON response
       const parsedFeedback = JSON.parse(feedbackResponse);
       setFeedback(parsedFeedback);
       
@@ -145,7 +149,6 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
     );
   }
   
-  // Get score color based on value
   const getScoreColor = (score) => {
     if (score >= 8) return "text-green-600";
     if (score >= 6) return "text-amber-600";
@@ -235,7 +238,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
                 <CardContent className="p-4">
                   <div className="flex items-start space-x-2">
                     {resource.type === "article" && <FileText className="w-5 h-5 text-blue-500 shrink-0" />}
-                    {resource.type === "video" && <MessageSquare className="w-5 h-5 text-red-500 shrink-0" />}
+                    {resource.type === "video" && <Video className="w-5 h-5 text-red-500 shrink-0" />}
                     {resource.type === "course" && <BookOpen className="w-5 h-5 text-green-500 shrink-0" />}
                     {resource.type === "book" && <BookOpen className="w-5 h-5 text-amber-500 shrink-0" />}
                     <div>
