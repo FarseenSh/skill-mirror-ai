@@ -18,7 +18,7 @@ import elevenLabsService, { ELEVEN_LABS_VOICES } from '@/services/elevenLabsServ
 import { conversationsManager, aiColleaguesManager } from '@/lib/supabase';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import useRealtimeSubscription from '@/hooks/useRealtimeSubscription';
-import { ChatMessage } from '@/components/workspace/ChatMessage';
+import { ChatMessage, ChatMessageProps, MessageStatus } from '@/components/workspace/ChatMessage';
 import { TaskPanel } from '@/components/workspace/TaskPanel';
 import { CodeEditor } from '@/components/workspace/CodeEditor';
 import { SkillProgressTracker } from '@/components/workspace/SkillProgressTracker';
@@ -34,15 +34,15 @@ type AIColleague = {
   voice_id: string | null;
 };
 
-type Message = {
+interface Message {
   id?: string;
   conversation_id?: string;
   sender_type: 'user' | 'ai' | 'system';
   content: string;
   created_at?: string;
   audio_url?: string;
-  status?: 'sending' | 'sent' | 'delivered' | 'read';
-};
+  status?: MessageStatus;
+}
 
 export default function WorkspacePage() {
   const { user } = useAuth();
@@ -256,7 +256,9 @@ export default function WorkspacePage() {
             created_at: new Date().toISOString(),
           };
           
-          setMessages(prev => [...prev, contextMessage]);
+          // Create a new array instead of modifying the previous one
+          const updatedMessages = [...messages, contextMessage];
+          setMessages(updatedMessages);
           
           // Automatically suggest discussing the task
           await sendMessage(`Let's discuss how to approach this task: ${task.title}`);
@@ -280,7 +282,9 @@ export default function WorkspacePage() {
         status: 'sending'
       };
       
-      setMessages([...messages, userMessage]);
+      // Create a new array instead of modifying the previous one
+      const messagesWithUserMessage = [...messages, userMessage];
+      setMessages(messagesWithUserMessage);
       
       if (!customMessage) {
         setMessage('');
@@ -291,13 +295,13 @@ export default function WorkspacePage() {
       
       // Update message status to "sent"
       setTimeout(() => {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sending' 
-              ? { ...msg, status: 'sent' } 
-              : msg
-          )
+        const updatedMessages = messages.map(msg => 
+          msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sending' 
+            ? { ...msg, status: 'sent' } 
+            : msg
         );
+        
+        setMessages(updatedMessages);
       }, 500);
       
       // Call Claude API
@@ -307,13 +311,13 @@ export default function WorkspacePage() {
       );
       
       // Update message status to "delivered"
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sent' 
-            ? { ...msg, status: 'delivered' } 
-            : msg
-        )
+      const messagesWithDeliveredStatus = messages.map(msg => 
+        msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sent' 
+          ? { ...msg, status: 'delivered' } 
+          : msg
       );
+      
+      setMessages(messagesWithDeliveredStatus);
       
       // Generate voice if available
       if (currentColleague?.voice_id) {
@@ -333,13 +337,13 @@ export default function WorkspacePage() {
       }
       
       // Update message status to "read"
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'delivered' 
-            ? { ...msg, status: 'read' } 
-            : msg
-        )
+      const messagesWithReadStatus = messages.map(msg => 
+        msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'delivered' 
+          ? { ...msg, status: 'read' } 
+          : msg
       );
+      
+      setMessages(messagesWithReadStatus);
       
       // Check if this conversation is about a task and update skills accordingly
       if (selectedTask) {

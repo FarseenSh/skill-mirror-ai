@@ -4,12 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 
-type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read';
+export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read';
 
-interface ChatMessageProps {
+export interface ChatMessageProps {
   id: string;
   content: string;
-  senderType: 'user' | 'ai';
+  senderType: 'user' | 'ai' | 'system';
   senderName: string;
   senderAvatar?: string;
   timestamp: Date;
