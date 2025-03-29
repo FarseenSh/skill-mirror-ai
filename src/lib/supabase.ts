@@ -1,14 +1,6 @@
 
 // Supabase client integration for SkillMirror
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
-
-// Initialize Supabase client
-// In a production environment, these would be environment variables
-const supabaseUrl = 'https://your-supabase-project-url.supabase.co';
-const supabaseAnonKey = 'your-supabase-anon-key';
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+import { supabase } from '@/integrations/supabase/client';
 
 // Auth functions
 export const auth = {
@@ -163,7 +155,7 @@ export const conversationsManager = {
   getUserConversations: async (userId: string) => {
     const { data, error } = await supabase
       .from('conversations')
-      .select('*')
+      .select('*, ai_colleagues(*)')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
       
@@ -266,18 +258,41 @@ export const interviewsManager = {
   }
 };
 
+// AI Colleagues
+export const aiColleaguesManager = {
+  getAllColleagues: async () => {
+    const { data, error } = await supabase
+      .from('ai_colleagues')
+      .select('*');
+      
+    if (error) throw error;
+    return data;
+  },
+  
+  getColleagueById: async (id: string) => {
+    const { data, error } = await supabase
+      .from('ai_colleagues')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (error) throw error;
+    return data;
+  }
+};
+
 // Realtime subscription helpers
 export const realtime = {
   subscribeToTable: (tableName: string, callback: (payload: any) => void) => {
-    const subscription = supabase
+    const channel = supabase
       .channel(`public:${tableName}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: tableName }, callback)
       .subscribe();
       
-    return subscription;
+    return channel;
   },
   
-  unsubscribe: (subscription: any) => {
-    supabase.removeChannel(subscription);
+  unsubscribe: (channel: any) => {
+    supabase.removeChannel(channel);
   }
 };

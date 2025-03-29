@@ -58,6 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       const { user: authUser } = await auth.signIn(email, password);
       
+      if (!authUser) {
+        throw new Error("Authentication failed");
+      }
+      
       // Get user profile
       try {
         const profile = await userProfiles.getProfile(authUser.id);
@@ -87,6 +91,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       const { user: authUser } = await auth.signUp(email, password);
+      
+      if (!authUser) {
+        throw new Error("Sign up failed");
+      }
       
       // Create an initial user profile
       try {

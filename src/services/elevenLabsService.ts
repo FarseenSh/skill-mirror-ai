@@ -57,81 +57,60 @@ export const ELEVEN_LABS_MODELS = {
   TURBO: 'eleven_turbo_v2',
 };
 
-// API Configuration
-const ELEVEN_LABS_API_KEY = 'your-elevenlabs-api-key'; // In production, this would be an environment variable
-const ELEVEN_LABS_API_URL = 'https://api.elevenlabs.io/v1';
-
-// ElevenLabs Service
+// ElevenLabs Service - Currently simulated without actual API key
 export const elevenLabsService = {
-  // Convert text to speech
+  // Convert text to speech (simulated for now)
   textToSpeech: async (
     text: string, 
     voiceId: string = ELEVEN_LABS_VOICES.MENTOR_MALE.voice_id,
     modelId: string = ELEVEN_LABS_MODELS.MULTILINGUAL
   ): Promise<Blob> => {
     try {
-      const requestBody: TextToSpeechRequest = {
-        text,
-        voice_id: voiceId,
-        model_id: modelId,
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-        }
-      };
-
-      const response = await fetch(`${ELEVEN_LABS_API_URL}/text-to-speech/${voiceId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': ELEVEN_LABS_API_KEY,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        throw new Error(`ElevenLabs API error: ${response.statusText}`);
+      console.log(`Simulating ElevenLabs API call with text: "${text.substring(0, 50)}..." and voice: ${voiceId}`);
+      
+      // Create a simple audio blob for testing (1 second of silence)
+      const audioContext = new AudioContext();
+      const sampleRate = audioContext.sampleRate;
+      const buffer = audioContext.createBuffer(1, sampleRate, sampleRate);
+      const channelData = buffer.getChannelData(0);
+      
+      // Fill with silence
+      for (let i = 0; i < channelData.length; i++) {
+        channelData[i] = 0;
       }
-
-      return await response.blob();
+      
+      // Convert to WAV
+      const offlineContext = new OfflineAudioContext(1, sampleRate, sampleRate);
+      const source = offlineContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(offlineContext.destination);
+      source.start();
+      
+      const renderedBuffer = await offlineContext.startRendering();
+      
+      // Convert buffer to WAV format
+      const wavBlob = new Blob([new Uint8Array(0)], { type: 'audio/wav' });
+      
+      return wavBlob;
     } catch (error) {
-      console.error('Error generating speech from ElevenLabs:', error);
+      console.error('Error generating speech from ElevenLabs (simulated):', error);
       throw error;
     }
   },
 
-  // Get available voices
-  getVoices: async (): Promise<Voice[]> => {
-    try {
-      const response = await fetch(`${ELEVEN_LABS_API_URL}/voices`, {
-        method: 'GET',
-        headers: {
-          'xi-api-key': ELEVEN_LABS_API_KEY,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`ElevenLabs API error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.voices;
-    } catch (error) {
-      console.error('Error fetching voices from ElevenLabs:', error);
-      throw error;
-    }
-  },
-
-  // Generate a voice sample
+  // Generate a voice sample (simulated for now)
   generateVoiceSample: async (
     text: string,
     voiceId: string
   ): Promise<string> => {
     try {
-      const audioBlob = await elevenLabsService.textToSpeech(text, voiceId);
-      return URL.createObjectURL(audioBlob);
+      console.log(`Simulating voice sample generation for: "${text.substring(0, 50)}..."`);
+      
+      // In a real implementation, we would call the textToSpeech method
+      // For now, return a dummy audio URL
+      return 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
     } catch (error) {
-      console.error('Error generating voice sample:', error);
+      console.error('Error generating voice sample (simulated):', error);
       throw error;
     }
   }

@@ -9,7 +9,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
 import claudeService, { AI_PERSONALITIES } from '@/services/claudeService';
 import elevenLabsService, { ELEVEN_LABS_VOICES } from '@/services/elevenLabsService';
-import { conversationsManager } from '@/lib/supabase';
+import { conversationsManager, aiColleaguesManager } from '@/lib/supabase';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import useRealtimeSubscription from '@/hooks/useRealtimeSubscription';
 
@@ -40,6 +40,7 @@ export default function WorkspacePage() {
   const [currentConversation, setCurrentConversation] = useState<string | null>(null);
   const [conversations, setConversations] = useState<any[]>([]);
   const [audioCaching, setAudioCaching] = useState<Record<string, string>>({});
+  const [colleagues, setColleagues] = useState<AIColleague[]>([]);
   const messageEndRef = useRef<HTMLDivElement>(null);
   
   const { data: messages, setData: setMessages } = useRealtimeSubscription<Message>(
@@ -48,32 +49,23 @@ export default function WorkspacePage() {
     currentConversation ? { conversation_id: currentConversation } : undefined
   );
   
-  const sampleColleagues: AIColleague[] = [
-    {
-      id: 'colleague-1',
-      name: 'Maya Chen',
-      role: 'Senior Product Manager',
-      avatar_url: null,
-      personality: AI_PERSONALITIES.SUPPORTIVE_MENTOR,
-      voice_id: ELEVEN_LABS_VOICES.MENTOR_FEMALE.voice_id,
-    },
-    {
-      id: 'colleague-2',
-      name: 'Marcus Johnson',
-      role: 'Technical Lead',
-      avatar_url: null,
-      personality: AI_PERSONALITIES.TECHNICAL_EXPERT,
-      voice_id: ELEVEN_LABS_VOICES.MENTOR_MALE.voice_id,
-    },
-    {
-      id: 'colleague-3',
-      name: 'Sophia Rodriguez',
-      role: 'UX/UI Designer',
-      avatar_url: null,
-      personality: AI_PERSONALITIES.CREATIVE_COLLABORATOR,
-      voice_id: ELEVEN_LABS_VOICES.INTERVIEWER_FEMALE.voice_id,
-    },
-  ];
+  useEffect(() => {
+    const loadColleagues = async () => {
+      try {
+        const aiColleagues = await aiColleaguesManager.getAllColleagues();
+        setColleagues(aiColleagues as AIColleague[]);
+      } catch (error) {
+        console.error("Error loading AI colleagues:", error);
+        toast({
+          title: "Error loading colleagues",
+          description: "Failed to load AI colleagues",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    loadColleagues();
+  }, [toast]);
 
   useEffect(() => {
     const loadConversations = async () => {
@@ -96,7 +88,7 @@ export default function WorkspacePage() {
     };
     
     loadConversations();
-  }, [user]);
+  }, [user, toast]);
   
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -126,7 +118,7 @@ export default function WorkspacePage() {
       
       setCurrentConversation(result.conversation.id);
       
-      const typedMessages = result.messages as Message[];
+      const typedMessages = result.messages as unknown as Message[];
       setMessages(typedMessages);
       
       setConversations(prev => [result.conversation, ...prev]);
@@ -168,14 +160,14 @@ export default function WorkspacePage() {
       const conversation = conversations.find(c => c.id === conversationId);
       if (!conversation) return;
       
-      const colleague = sampleColleagues.find(c => c.id === conversation.ai_colleague_id);
+      const colleague = colleagues.find(c => c.id === conversation.ai_colleague_id);
       if (!colleague) return;
       
       setCurrentColleague(colleague);
       setCurrentConversation(conversationId);
       
       const conversationMessages = await conversationsManager.getConversationMessages(conversationId);
-      setMessages(conversationMessages);
+      setMessages(conversationMessages as Message[]);
       
       if (colleague.voice_id) {
         const aiMessages = conversationMessages.filter(m => m.sender_type === 'ai');

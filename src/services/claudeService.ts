@@ -1,6 +1,7 @@
 
 // Claude API service for AI colleague interactions
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import { aiColleaguesManager, conversationsManager } from '@/lib/supabase';
 
 // Types for Claude API
 type MessageRole = 'user' | 'assistant' | 'system';
@@ -54,10 +55,6 @@ export const AI_PERSONALITIES = {
   INTERVIEWER: 'You are conducting a job interview. Ask challenging but fair questions related to the position, and evaluate the user\'s responses objectively.',
 };
 
-// API Configuration
-const CLAUDE_API_KEY = 'your-claude-api-key';  // In production, this would be an environment variable
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
-
 // Main Claude API Service
 export const claudeService = {
   // Generate a response from Claude
@@ -68,31 +65,26 @@ export const claudeService = {
     temperature: number = 0.7
   ): Promise<string> => {
     try {
-      const requestBody: ClaudeRequestBody = {
-        model,
-        messages,
-        system: systemPrompt,
-        max_tokens: 1000,
-        temperature,
-      };
-
-      const response = await fetch(CLAUDE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01',
-          'x-api-key': CLAUDE_API_KEY,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Claude API error: ${errorData.error?.message || response.statusText}`);
+      // For now, we'll simulate responses since we need API key
+      console.log("Claude API would process:", { messages, systemPrompt, model });
+      
+      // Get the last message
+      const lastMessage = messages[messages.length - 1];
+      
+      // For simulation purposes, let's generate some helpful responses
+      let response = "I'm your AI colleague. I'd be happy to help with that!";
+      
+      if (lastMessage.content.toLowerCase().includes("interview")) {
+        response = "Let's prepare for your interview. Can you tell me what position you're applying for and what areas you'd like to focus on?";
+      } else if (lastMessage.content.toLowerCase().includes("skill")) {
+        response = "Developing new skills is crucial for career growth. What specific skills are you looking to improve, and what's your current level of proficiency?";
+      } else if (lastMessage.content.toLowerCase().includes("project")) {
+        response = "Let's discuss your project. What are the main goals and challenges you're facing? I can help you create a structured plan to tackle it effectively.";
+      } else if (lastMessage.content.toLowerCase().includes("feedback")) {
+        response = "I'd be happy to give you feedback. Could you share more details about what you're working on? The more specific you are, the more helpful I can be.";
       }
-
-      const data: ClaudeResponse = await response.json();
-      return data.content[0].text;
+      
+      return response;
     } catch (error) {
       console.error('Error generating response from Claude:', error);
       throw error;
@@ -108,26 +100,14 @@ export const claudeService = {
   ) => {
     try {
       // Get AI colleague details
-      const { data: aiColleague, error: aiError } = await supabase
-        .from('ai_colleagues')
-        .select('*')
-        .eq('id', aiColleagueId)
-        .single();
-
-      if (aiError) throw aiError;
+      const aiColleague = await aiColleaguesManager.getColleagueById(aiColleagueId);
 
       // Create a new conversation
-      const { data: conversation, error: convError } = await supabase
-        .from('conversations')
-        .insert([{
-          user_id: userId,
-          ai_colleague_id: aiColleagueId,
-          title,
-        }])
-        .select()
-        .single();
-
-      if (convError) throw convError;
+      const conversation = await conversationsManager.createConversation({
+        user_id: userId,
+        ai_colleague_id: aiColleagueId,
+        title,
+      });
 
       // Generate system prompt based on AI colleague personality
       const systemPrompt = `${aiColleague.personality} Your name is ${aiColleague.name} and your role is ${aiColleague.role}.`;
@@ -139,18 +119,18 @@ export const claudeService = {
       );
 
       // Save the user message
-      await supabase.from('messages').insert([{
+      await conversationsManager.addMessage({
         conversation_id: conversation.id,
         sender_type: 'user',
         content: initialMessage,
-      }]);
+      });
 
       // Save the AI response
-      await supabase.from('messages').insert([{
+      await conversationsManager.addMessage({
         conversation_id: conversation.id,
         sender_type: 'ai',
         content: aiResponse,
-      }]);
+      });
 
       return {
         conversation,
@@ -174,30 +154,21 @@ export const claudeService = {
     try {
       if (senderType === 'user') {
         // Save the user message
-        await supabase.from('messages').insert([{
+        await conversationsManager.addMessage({
           conversation_id: conversationId,
           sender_type: 'user',
           content: message,
-        }]);
+        });
 
         // Get conversation details and AI colleague
-        const { data: conversation, error: convError } = await supabase
+        const { data: conversation } = await supabase
           .from('conversations')
           .select('*, ai_colleagues(*)')
           .eq('id', conversationId)
           .single();
 
-        if (convError) throw convError;
-
         // Get previous messages for context
-        const { data: previousMessages, error: msgError } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('conversation_id', conversationId)
-          .order('created_at', { ascending: true })
-          .limit(10);
-
-        if (msgError) throw msgError;
+        const previousMessages = await conversationsManager.getConversationMessages(conversationId);
 
         // Format messages for Claude API
         const formattedMessages: Message[] = previousMessages.map(msg => ({
@@ -221,32 +192,21 @@ export const claudeService = {
         );
 
         // Save the AI response
-        const { data: savedResponse, error: saveError } = await supabase
-          .from('messages')
-          .insert([{
-            conversation_id: conversationId,
-            sender_type: 'ai',
-            content: aiResponse,
-          }])
-          .select()
-          .single();
-
-        if (saveError) throw saveError;
+        const savedResponse = await conversationsManager.addMessage({
+          conversation_id: conversationId,
+          sender_type: 'ai',
+          content: aiResponse,
+        });
 
         return savedResponse;
       } else {
         // If it's an AI message (manual insertion)
-        const { data, error } = await supabase
-          .from('messages')
-          .insert([{
-            conversation_id: conversationId,
-            sender_type: 'ai',
-            content: message,
-          }])
-          .select()
-          .single();
+        const data = await conversationsManager.addMessage({
+          conversation_id: conversationId,
+          sender_type: 'ai',
+          content: message,
+        });
 
-        if (error) throw error;
         return data;
       }
     } catch (error) {
