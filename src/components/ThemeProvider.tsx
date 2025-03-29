@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import * as React from "react";
 import { useToast } from "@/hooks/use-toast";
 
 type Theme = "dark" | "light" | "system";
@@ -24,7 +24,7 @@ const initialState: ThemeProviderState = {
   resolvedTheme: "light",
 };
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const ThemeProviderContext = React.createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
@@ -32,14 +32,21 @@ export function ThemeProvider({
   storageKey = "skill-mirror-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  const [theme, setTheme] = React.useState<Theme>(
+    () => {
+      if (typeof localStorage !== 'undefined') {
+        return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+      }
+      return defaultTheme;
+    }
   );
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
+  const [resolvedTheme, setResolvedTheme] = React.useState<"light" | "dark">("light");
   const { toast } = useToast();
 
   // Function to apply theme to the document
   const applyTheme = (newTheme: Theme) => {
+    if (typeof window === 'undefined') return "light";
+    
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
@@ -63,7 +70,9 @@ export function ThemeProvider({
     return resolvedTheme;
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     applyTheme(theme);
 
     // Listen for system theme changes
@@ -82,7 +91,9 @@ export function ThemeProvider({
     theme,
     resolvedTheme,
     setTheme: (newTheme: Theme) => {
-      localStorage.setItem(storageKey, newTheme);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(storageKey, newTheme);
+      }
       setTheme(newTheme);
       const resolvedTheme = applyTheme(newTheme);
       
@@ -105,7 +116,7 @@ export function ThemeProvider({
 }
 
 export const useTheme = () => {
-  const context = useContext(ThemeProviderContext);
+  const context = React.useContext(ThemeProviderContext);
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
   return context;
