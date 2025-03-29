@@ -10,7 +10,7 @@ import ResourceCard, { Resource } from "@/components/resources/ResourceCard";
 import LearningPathCard from "@/components/resources/LearningPathCard";
 import StudyStreakCard from "@/components/resources/StudyStreakCard";
 import { sampleResources, sampleLearningPaths, studyStreakData } from "@/data/resourcesData";
-import { Book, BookOpen, Filter, Search, Sparkles, CheckCircle2, Grid2X2, List } from "lucide-react";
+import { Book, BookOpen, Filter, Search, Sparkles, CheckCircle2, Grid2X2, List, FileText, Video, Code } from "lucide-react";
 
 export default function ResourcesPage() {
   const [activeTab, setActiveTab] = useState("all");
@@ -139,7 +139,7 @@ export default function ResourcesPage() {
             
             <div className="flex border rounded-md">
               <Button
-                variant={viewMode === "grid" ? "subtle" : "ghost"}
+                variant={viewMode === "grid" ? "secondary" : "ghost"}
                 size="icon"
                 className="h-9 w-9 rounded-none rounded-l-md"
                 onClick={() => setViewMode("grid")}
@@ -148,7 +148,7 @@ export default function ResourcesPage() {
                 <Grid2X2 className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === "list" ? "subtle" : "ghost"}
+                variant={viewMode === "list" ? "secondary" : "ghost"}
                 size="icon"
                 className="h-9 w-9 rounded-none rounded-r-md"
                 onClick={() => setViewMode("list")}
