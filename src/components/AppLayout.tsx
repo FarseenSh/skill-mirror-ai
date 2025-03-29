@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AppTopBar } from "@/components/AppTopBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 
 export default function AppLayout() {
   return (
@@ -16,6 +17,7 @@ export default function AppLayout() {
           </main>
         </div>
       </div>
+      <WelcomeTour />
     </SidebarProvider>
   );
 }

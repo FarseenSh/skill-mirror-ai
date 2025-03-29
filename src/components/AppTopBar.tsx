@@ -1,5 +1,5 @@
 
-import { Bell, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/components/AuthProvider";
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 
 export function AppTopBar() {
   const { user, signOut } = useAuth();
@@ -22,12 +23,7 @@ export function AppTopBar() {
         <SidebarTrigger />
       </div>
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 flex h-2 w-2 rounded-full bg-red-500">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-          </span>
-        </Button>
+        <NotificationCenter />
         <ThemeToggle variant="dropdown" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
