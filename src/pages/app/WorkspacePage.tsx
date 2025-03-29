@@ -3,7 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Send, PenLine, Mic, User, Bot } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Loader2, Send, User, Bot, 
+  FileCode, ListTodo, BarChart, 
+  MessageSquare, Sparkles
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { useAuth } from '@/components/AuthProvider';
@@ -13,6 +18,12 @@ import elevenLabsService, { ELEVEN_LABS_VOICES } from '@/services/elevenLabsServ
 import { conversationsManager, aiColleaguesManager } from '@/lib/supabase';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import useRealtimeSubscription from '@/hooks/useRealtimeSubscription';
+import { ChatMessage } from '@/components/workspace/ChatMessage';
+import { TaskPanel } from '@/components/workspace/TaskPanel';
+import { CodeEditor } from '@/components/workspace/CodeEditor';
+import { SkillProgressTracker } from '@/components/workspace/SkillProgressTracker';
+import { workplaceTasks, authBugFixTask } from '@/data/workplaceTasks';
+import { sampleSkills } from '@/data/skillsData';
 
 type AIColleague = {
   id: string;
@@ -26,10 +37,11 @@ type AIColleague = {
 type Message = {
   id?: string;
   conversation_id?: string;
-  sender_type: 'user' | 'ai';
+  sender_type: 'user' | 'ai' | 'system';
   content: string;
   created_at?: string;
   audio_url?: string;
+  status?: 'sending' | 'sent' | 'delivered' | 'read';
 };
 
 export default function WorkspacePage() {
@@ -42,6 +54,12 @@ export default function WorkspacePage() {
   const [conversations, setConversations] = useState<any[]>([]);
   const [audioCaching, setAudioCaching] = useState<Record<string, string>>({});
   const [colleagues, setColleagues] = useState<AIColleague[]>([]);
+  const [workspaceTab, setWorkspaceTab] = useState<string>('chat');
+  const [tasks, setTasks] = useState(workplaceTasks);
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [currentTaskCode, setCurrentTaskCode] = useState<string>('');
+  const [isAiTyping, setIsAiTyping] = useState(false);
+  const [skills, setSkills] = useState(sampleSkills);
   const messageEndRef = useRef<HTMLDivElement>(null);
   
   const { data: messages, setData: setMessages } = useRealtimeSubscription<Message>(
@@ -94,6 +112,18 @@ export default function WorkspacePage() {
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+  
+  useEffect(() => {
+    // Set selected task code when task is selected
+    if (selectedTask) {
+      const task = tasks.find(t => t.id === selectedTask);
+      if (task && task.codeSnippet) {
+        setCurrentTaskCode(task.codeSnippet);
+      } else {
+        setCurrentTaskCode('// No code associated with this task yet');
+      }
+    }
+  }, [selectedTask, tasks]);
   
   const selectColleague = (colleague: AIColleague) => {
     setCurrentColleague(colleague);
@@ -203,27 +233,89 @@ export default function WorkspacePage() {
     }
   };
   
-  const sendMessage = async () => {
-    if (!message.trim() || !currentConversation || !user) return;
+  const handleTaskSelection = async (taskId: string) => {
+    setSelectedTask(taskId);
+    
+    // If there's an active conversation, add task context to it
+    if (currentConversation) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        try {
+          await claudeService.addTaskContextToConversation(
+            currentConversation,
+            task.id,
+            task.title,
+            task.description,
+            task.codeSnippet
+          );
+          
+          // Add system message to UI about task context
+          const contextMessage: Message = {
+            sender_type: 'system',
+            content: `[Switched to task: ${task.title}]`,
+            created_at: new Date().toISOString(),
+          };
+          
+          setMessages(prev => [...prev, contextMessage]);
+          
+          // Automatically suggest discussing the task
+          await sendMessage(`Let's discuss how to approach this task: ${task.title}`);
+        } catch (error) {
+          console.error("Error adding task context:", error);
+        }
+      }
+    }
+  };
+  
+  const sendMessage = async (customMessage?: string) => {
+    const messageToSend = customMessage || message;
+    if (!messageToSend.trim() || !currentConversation || !user) return;
     
     try {
-      setIsLoading(true);
-      
+      // Add the user message to the UI immediately with "sending" status
       const userMessage: Message = {
         sender_type: 'user',
-        content: message,
+        content: messageToSend,
         created_at: new Date().toISOString(),
+        status: 'sending'
       };
       
       setMessages([...messages, userMessage]);
       
-      setMessage('');
+      if (!customMessage) {
+        setMessage('');
+      }
       
+      // Set AI typing indicator
+      setIsAiTyping(true);
+      
+      // Update message status to "sent"
+      setTimeout(() => {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sending' 
+              ? { ...msg, status: 'sent' } 
+              : msg
+          )
+        );
+      }, 500);
+      
+      // Call Claude API
       const aiMessage = await claudeService.addMessageToConversation(
         currentConversation,
-        message
+        messageToSend
       );
       
+      // Update message status to "delivered"
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'sent' 
+            ? { ...msg, status: 'delivered' } 
+            : msg
+        )
+      );
+      
+      // Generate voice if available
       if (currentColleague?.voice_id) {
         try {
           const audioUrl = await elevenLabsService.generateVoiceSample(
@@ -239,6 +331,23 @@ export default function WorkspacePage() {
           console.error("Error generating audio:", audioError);
         }
       }
+      
+      // Update message status to "read"
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.content === messageToSend && msg.sender_type === 'user' && msg.status === 'delivered' 
+            ? { ...msg, status: 'read' } 
+            : msg
+        )
+      );
+      
+      // Check if this conversation is about a task and update skills accordingly
+      if (selectedTask) {
+        updateSkillsBasedOnTask(selectedTask);
+      }
+      
+      // Turn off typing indicator
+      setIsAiTyping(false);
     } catch (error) {
       toast({
         title: "Error sending message",
@@ -246,9 +355,69 @@ export default function WorkspacePage() {
         variant: "destructive",
       });
       console.error("Error sending message:", error);
-    } finally {
-      setIsLoading(false);
+      setIsAiTyping(false);
     }
+  };
+  
+  const handleCodeChange = (newCode: string) => {
+    setCurrentTaskCode(newCode);
+  };
+  
+  const handleSaveCode = (code: string, taskId: string) => {
+    // Update the task with the new code
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { ...task, codeSnippet: code } 
+          : task
+      )
+    );
+    
+    toast({
+      title: "Code saved",
+      description: "Your changes have been saved successfully",
+    });
+    
+    // If there's an active conversation, notify about the code update
+    if (currentConversation) {
+      sendMessage("I've updated the code for this task. Can you review the changes?");
+    }
+  };
+  
+  const updateSkillsBasedOnTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    // Simulate skill improvement based on task
+    const updatedSkills = [...skills];
+    
+    task.skillsInvolved.forEach(taskSkill => {
+      const skillIndex = updatedSkills.findIndex(s => 
+        s.name.toLowerCase() === taskSkill.name.toLowerCase()
+      );
+      
+      if (skillIndex >= 0) {
+        // Increase skill by a small amount (1-3%)
+        const improvement = Math.floor(Math.random() * 3) + 1;
+        const newProficiency = Math.min(updatedSkills[skillIndex].proficiency + improvement, 100);
+        
+        updatedSkills[skillIndex] = {
+          ...updatedSkills[skillIndex],
+          proficiency: newProficiency,
+          recentImprovement: true
+        };
+        
+        // Show toast if significant improvement or target reached
+        if (improvement > 1 || newProficiency >= updatedSkills[skillIndex].targetProficiency) {
+          toast({
+            title: `${taskSkill.name} skill improved!`,
+            description: `Your ${taskSkill.name} proficiency increased to ${newProficiency}%`,
+          });
+        }
+      }
+    });
+    
+    setSkills(updatedSkills);
   };
   
   const getInitials = (name: string) => {
@@ -264,7 +433,7 @@ export default function WorkspacePage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Workspace</h1>
         <p className="text-muted-foreground">
-          Interact with AI colleagues on realistic tasks and scenarios.
+          Collaborate with AI colleagues on tasks and projects
         </p>
       </div>
 
@@ -273,7 +442,7 @@ export default function WorkspacePage() {
           <CardHeader>
             <CardTitle>AI Colleagues</CardTitle>
             <CardDescription>
-              Select a colleague to work with on tasks and scenarios.
+              Work with colleagues on tasks and scenarios
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -302,7 +471,7 @@ export default function WorkspacePage() {
 
         <Card className="lg:col-span-3">
           {!currentColleague ? (
-            <div className="flex flex-col items-center justify-center h-[500px] p-6">
+            <div className="flex flex-col items-center justify-center h-[600px] p-6">
               <Bot size={64} className="text-muted-foreground mb-4" />
               <h2 className="text-xl font-semibold mb-2">Select an AI Colleague</h2>
               <p className="text-muted-foreground text-center mb-6">
@@ -310,7 +479,7 @@ export default function WorkspacePage() {
               </p>
             </div>
           ) : !currentConversation ? (
-            <div className="flex flex-col items-center justify-center h-[500px] p-6">
+            <div className="flex flex-col items-center justify-center h-[600px] p-6">
               <div className="text-center max-w-md mx-auto">
                 <Avatar className="w-20 h-20 mx-auto mb-4">
                   <AvatarImage src={currentColleague.avatar_url || undefined} />
@@ -332,7 +501,7 @@ export default function WorkspacePage() {
                             className="w-full justify-start"
                             onClick={() => loadConversation(conv.id)}
                           >
-                            <PenLine className="mr-2 h-4 w-4" />
+                            <MessageSquare className="mr-2 h-4 w-4" />
                             {conv.title}
                           </Button>
                         ))
@@ -353,94 +522,149 @@ export default function WorkspacePage() {
             </div>
           ) : (
             <>
-              <CardHeader className="border-b">
-                <div className="flex items-center">
-                  <Avatar className="h-10 w-10 mr-3">
-                    <AvatarImage src={currentColleague.avatar_url || undefined} />
-                    <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle>{currentColleague.name}</CardTitle>
-                    <CardDescription>{currentColleague.role}</CardDescription>
+              <CardHeader className="border-b pb-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Avatar className="h-10 w-10 mr-3">
+                      <AvatarImage src={currentColleague.avatar_url || undefined} />
+                      <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <CardTitle>{currentColleague.name}</CardTitle>
+                      <CardDescription>{currentColleague.role}</CardDescription>
+                    </div>
                   </div>
+                  <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+                    <TabsList>
+                      <TabsTrigger value="chat" className="flex items-center">
+                        <MessageSquare className="h-4 w-4 mr-1" />
+                        <span>Chat</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="tasks" className="flex items-center">
+                        <ListTodo className="h-4 w-4 mr-1" />
+                        <span>Tasks</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="code" className="flex items-center">
+                        <FileCode className="h-4 w-4 mr-1" />
+                        <span>Code</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="skills" className="flex items-center">
+                        <BarChart className="h-4 w-4 mr-1" />
+                        <span>Skills</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               </CardHeader>
-              <ScrollArea className="h-[400px] p-4">
-                <div className="space-y-4">
-                  {messages.map((msg, i) => (
-                    <div 
-                      key={msg.id || i} 
-                      className={`flex ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div 
-                        className={`
-                          max-w-[80%] rounded-lg p-3 
-                          ${msg.sender_type === 'user' 
-                            ? 'bg-primary text-primary-foreground ml-4' 
-                            : 'bg-muted mr-4'
-                          }
-                        `}
-                      >
-                        <div className="flex items-start">
-                          {msg.sender_type === 'ai' && (
-                            <Avatar className="h-8 w-8 mr-2">
-                              <AvatarImage src={currentColleague.avatar_url || undefined} />
-                              <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
-                            </Avatar>
-                          )}
-                          <div>
-                            <div className="whitespace-pre-wrap">{msg.content}</div>
-                            
-                            {msg.sender_type === 'ai' && audioCaching[msg.content] && (
-                              <div className="mt-2">
-                                <VoicePlayer 
-                                  audioUrl={audioCaching[msg.content]} 
-                                  showWaveform={false}
-                                />
-                              </div>
-                            )}
+              
+              <TabsContent value="chat" className="m-0">
+                <ScrollArea className="h-[500px] p-4">
+                  <div className="space-y-4">
+                    {messages.map((msg, i) => {
+                      if (msg.sender_type === 'system') {
+                        return (
+                          <div key={msg.id || i} className="flex justify-center">
+                            <div className="bg-muted rounded-md px-3 py-1 text-xs text-muted-foreground">
+                              {msg.content}
+                            </div>
                           </div>
-                          {msg.sender_type === 'user' && (
-                            <Avatar className="h-8 w-8 ml-2">
-                              <AvatarImage src={user?.profile?.avatar_url || undefined} />
-                              <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
-                            </Avatar>
-                          )}
+                        );
+                      }
+                      
+                      return (
+                        <ChatMessage 
+                          key={msg.id || i}
+                          id={msg.id || `msg-${i}`}
+                          content={msg.content}
+                          senderType={msg.sender_type}
+                          senderName={msg.sender_type === 'user' ? (user?.profile?.full_name || 'You') : currentColleague.name}
+                          senderAvatar={msg.sender_type === 'user' ? user?.profile?.avatar_url : currentColleague.avatar_url || undefined}
+                          timestamp={new Date(msg.created_at || Date.now())}
+                          audioUrl={msg.sender_type === 'ai' && audioCaching[msg.content] ? audioCaching[msg.content] : undefined}
+                          status={msg.sender_type === 'user' ? msg.status : undefined}
+                        />
+                      );
+                    })}
+                    
+                    {isAiTyping && (
+                      <div className="flex justify-start">
+                        <div className="bg-muted rounded-lg p-3 flex items-center space-x-2 max-w-[80%]">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={currentColleague.avatar_url || undefined} />
+                            <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  <div ref={messageEndRef} />
-                </div>
-              </ScrollArea>
-              <div className="p-4 border-t">
-                <div className="flex gap-2">
-                  <Textarea
-                    placeholder="Type your message..."
-                    className="min-h-10"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                    disabled={isLoading}
-                  />
-                  <Button 
-                    size="icon" 
-                    onClick={sendMessage}
-                    disabled={isLoading || !message.trim()}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
                     )}
-                  </Button>
+                    
+                    <div ref={messageEndRef} />
+                  </div>
+                </ScrollArea>
+                <div className="p-4 border-t">
+                  <div className="flex gap-2">
+                    <Textarea
+                      placeholder="Type your message..."
+                      className="min-h-10"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      disabled={isLoading || isAiTyping}
+                    />
+                    <Button 
+                      size="icon" 
+                      onClick={() => sendMessage()}
+                      disabled={isLoading || isAiTyping || !message.trim()}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              </TabsContent>
+              
+              <TabsContent value="tasks" className="m-0 p-4">
+                <TaskPanel 
+                  tasks={tasks} 
+                  onSelectTask={handleTaskSelection}
+                  selectedTaskId={selectedTask}
+                />
+              </TabsContent>
+              
+              <TabsContent value="code" className="m-0 p-4">
+                {selectedTask ? (
+                  <CodeEditor 
+                    initialCode={currentTaskCode}
+                    taskId={selectedTask}
+                    onCodeChange={handleCodeChange}
+                    onSaveCode={handleSaveCode}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[400px]">
+                    <FileCode size={48} className="text-muted-foreground mb-4" />
+                    <h3 className="text-xl font-medium mb-2">No Task Selected</h3>
+                    <p className="text-muted-foreground text-center max-w-md">
+                      Select a task from the Tasks tab to view and edit code.
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="skills" className="m-0 p-4">
+                <SkillProgressTracker skills={skills} />
+              </TabsContent>
             </>
           )}
         </Card>
