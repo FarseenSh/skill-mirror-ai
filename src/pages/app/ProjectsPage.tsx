@@ -37,7 +37,15 @@ export default function ProjectsPage() {
         }
       });
       
-      setProjects(allProjects);
+      // Type assertion to ensure proper types
+      const typedProjects: Project[] = allProjects.map(project => ({
+        ...project,
+        status: project.status as 'pending' | 'in_progress' | 'completed' | 'blocked',
+        project_type: project.project_type as 'assigned' | 'recommended' | 'personal',
+        priority: project.priority as 'low' | 'medium' | 'high'
+      }));
+      
+      setProjects(typedProjects);
     } catch (err: any) {
       console.error("Error loading projects:", err);
       setError(err);

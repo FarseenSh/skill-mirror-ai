@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
@@ -55,19 +54,36 @@ export default function ProjectDetailsPage() {
       
       // Load project details
       const projectData = await projectsManager.getProjectById(projectId);
-      setProject(projectData);
+      // Type assertion to ensure status matches our enum
+      const typedProject: Project = {
+        ...projectData,
+        status: projectData.status as 'pending' | 'in_progress' | 'completed' | 'blocked',
+        project_type: projectData.project_type as 'assigned' | 'recommended' | 'personal',
+        priority: projectData.priority as 'low' | 'medium' | 'high'
+      };
+      setProject(typedProject);
       
       // Load project skills
       const skillsData = await projectSkillsManager.getProjectSkills(projectId);
-      setSkills(skillsData);
+      setSkills(skillsData as ProjectSkill[]);
       
       // Load project subtasks
       const subtasksData = await projectSubtasksManager.getProjectSubtasks(projectId);
-      setSubtasks(subtasksData);
+      // Type assertion for subtasks
+      const typedSubtasks: ProjectSubtask[] = subtasksData.map(subtask => ({
+        ...subtask,
+        status: subtask.status as 'pending' | 'in_progress' | 'completed' | 'blocked'
+      }));
+      setSubtasks(typedSubtasks);
       
       // Load project submissions
       const submissionsData = await projectSubmissionsManager.getProjectSubmissions(projectId);
-      setSubmissions(submissionsData);
+      // Type assertion for submissions
+      const typedSubmissions: ProjectSubmission[] = submissionsData.map(submission => ({
+        ...submission,
+        submission_type: submission.submission_type as 'code' | 'document' | 'link' | 'other'
+      }));
+      setSubmissions(typedSubmissions);
     } catch (err: any) {
       console.error("Error loading project data:", err);
       toast({
@@ -98,12 +114,17 @@ export default function ProjectDetailsPage() {
       // Update status if it was pending
       if (project?.status === 'pending') {
         await projectsManager.updateProjectStatus(projectId, 'in_progress');
-        setProject(prev => prev ? { ...prev, status: 'in_progress' } : null);
+        setProject(prev => prev ? { ...prev, status: 'in_progress' as const } : null);
       }
       
       // Refresh submissions
       const submissionsData = await projectSubmissionsManager.getProjectSubmissions(projectId);
-      setSubmissions(submissionsData);
+      // Type assertion for submissions
+      const typedSubmissions: ProjectSubmission[] = submissionsData.map(submission => ({
+        ...submission,
+        submission_type: submission.submission_type as 'code' | 'document' | 'link' | 'other'
+      }));
+      setSubmissions(typedSubmissions);
       
       // Clear form
       setSubmissionContent("");
@@ -122,18 +143,23 @@ export default function ProjectDetailsPage() {
     }
   };
   
-  const handleUpdateSubtaskStatus = async (subtaskId: string, status: string) => {
+  const handleUpdateSubtaskStatus = async (subtaskId: string, status: 'pending' | 'in_progress' | 'completed' | 'blocked') => {
     try {
       await projectSubtasksManager.updateSubtaskStatus(subtaskId, status);
       
       // Refresh subtasks
       const subtasksData = await projectSubtasksManager.getProjectSubtasks(projectId!);
-      setSubtasks(subtasksData);
+      // Type assertion for subtasks
+      const typedSubtasks: ProjectSubtask[] = subtasksData.map(subtask => ({
+        ...subtask,
+        status: subtask.status as 'pending' | 'in_progress' | 'completed' | 'blocked'
+      }));
+      setSubtasks(typedSubtasks);
       
       // Update project progress based on completed subtasks
-      if (subtasksData.length > 0) {
-        const completedCount = subtasksData.filter(st => st.status === 'completed').length;
-        const progress = Math.round((completedCount / subtasksData.length) * 100);
+      if (typedSubtasks.length > 0) {
+        const completedCount = typedSubtasks.filter(st => st.status === 'completed').length;
+        const progress = Math.round((completedCount / typedSubtasks.length) * 100);
         
         await projectsManager.updateProjectProgress(projectId!, progress);
         setProject(prev => prev ? { ...prev, progress } : null);
@@ -162,7 +188,7 @@ export default function ProjectDetailsPage() {
       
       setProject(prev => prev ? { 
         ...prev, 
-        status: 'completed',
+        status: 'completed' as const,
         progress: 100
       } : null);
       

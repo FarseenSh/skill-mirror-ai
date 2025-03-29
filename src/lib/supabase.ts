@@ -1,4 +1,3 @@
-
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
@@ -150,7 +149,6 @@ export const projectsManager = {
     return data;
   },
   
-  // New functions for enhanced project management
   getProjectById: async (projectId: string) => {
     const { data, error } = await supabase
       .from('projects')
@@ -221,7 +219,7 @@ export const projectsManager = {
     return data;
   },
   
-  updateProjectStatus: async (projectId: string, status: string) => {
+  updateProjectStatus: async (projectId: string, status: 'pending' | 'in_progress' | 'completed' | 'blocked') => {
     const { data, error } = await supabase
       .from('projects')
       .update({ status })
@@ -302,7 +300,7 @@ export const projectSubtasksManager = {
     return data;
   },
   
-  updateSubtaskStatus: async (subtaskId: string, status: string) => {
+  updateSubtaskStatus: async (subtaskId: string, status: 'pending' | 'in_progress' | 'completed' | 'blocked') => {
     const { data, error } = await supabase
       .from('project_subtasks')
       .update({ status })
@@ -349,7 +347,12 @@ export const projectSubmissionsManager = {
     return data;
   },
   
-  addSubmission: async (submission: any) => {
+  addSubmission: async (submission: {
+    project_id: string;
+    user_id: string;
+    content: string;
+    submission_type: 'code' | 'document' | 'link' | 'other';
+  }) => {
     const { data, error } = await supabase
       .from('project_submissions')
       .insert([submission])
