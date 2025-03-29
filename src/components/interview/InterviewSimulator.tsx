@@ -110,9 +110,13 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         }
       }
       
+      const interviewSettings = typeof savedInterview.settings === 'string' 
+        ? JSON.parse(savedInterview.settings) 
+        : savedInterview.settings;
+      
       setCurrentInterview({
         ...savedInterview,
-        settings: JSON.parse(savedInterview.settings || '{}')
+        settings: interviewSettings
       });
       setQuestions(parsedQuestions);
       setCurrentQuestion(parsedQuestions[0]);
@@ -333,7 +337,7 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     return intervalId;
   };
   
-  const formatTimeRemaining = (seconds) => {
+  const formatTimeRemaining = (seconds: number | null) => {
     if (seconds === null) return null;
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;

@@ -47,7 +47,11 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
   const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState<any>(null);
   const [previousInterviews, setPreviousInterviews] = useState([]);
-  const [progressData, setProgressData] = useState(null);
+  const [progressData, setProgressData] = useState<{
+    points: Array<{date: string, score: number}>;
+    averageScore: number;
+    improvementRate: number;
+  } | null>(null);
   
   useEffect(() => {
     generateFeedback();
@@ -233,7 +237,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
     );
   }
   
-  const getScoreColor = (score) => {
+  const getScoreColor = (score: number) => {
     if (score >= 8) return "text-green-600";
     if (score >= 6) return "text-amber-600";
     return "text-red-600";
@@ -280,7 +284,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
           
           <TabsContent value="strengths" className="space-y-4 pt-4">
             <ul className="space-y-2">
-              {feedback.strengths.map((strength, index) => (
+              {feedback.strengths.map((strength: string, index: number) => (
                 <li key={index} className="flex items-start">
                   <CheckCircle2 className="w-5 h-5 text-green-600 mr-2 mt-0.5 shrink-0" />
                   <span>{strength}</span>
@@ -296,7 +300,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
                     <div key={skill} className="space-y-1">
                       <div className="flex justify-between text-sm">
                         <span className="capitalize">{skill}</span>
-                        <span className={getScoreColor(score as number)}>{score}/10</span>
+                        <span className={getScoreColor(score as number)}>{String(score)}/10</span>
                       </div>
                       <Progress value={(score as number) * 10} />
                     </div>
@@ -308,7 +312,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
           
           <TabsContent value="improvements" className="space-y-4 pt-4">
             <ul className="space-y-2">
-              {feedback.areasForImprovement.map((area, index) => (
+              {feedback.areasForImprovement.map((area: string, index: number) => (
                 <li key={index} className="flex items-start">
                   <AlertTriangle className="w-5 h-5 text-amber-600 mr-2 mt-0.5 shrink-0" />
                   <span>{area}</span>
@@ -365,7 +369,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
         <div className="border-t pt-4">
           <h3 className="font-medium mb-4">Question-Specific Feedback</h3>
           <div className="space-y-4">
-            {feedback.questionFeedback.map((qf, index) => (
+            {feedback.questionFeedback.map((qf: any, index: number) => (
               <div key={index} className="border rounded-md p-4">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-medium">{qf.question}</h4>
@@ -382,7 +386,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
         <div className="border-t pt-4">
           <h3 className="font-medium mb-4">Recommended Resources</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            {feedback.recommendedResources.map((resource, index) => (
+            {feedback.recommendedResources.map((resource: any, index: number) => (
               <Card key={index} className="bg-muted/50">
                 <CardContent className="p-4">
                   <div className="flex items-start space-x-2">
@@ -414,7 +418,7 @@ export function InterviewFeedback({ interview, questions, onSubmit, onBack }: In
         <div className="border-t pt-4">
           <h3 className="font-medium mb-3">Action Plan</h3>
           <ul className="space-y-2">
-            {feedback.actionPlan.map((action, index) => (
+            {feedback.actionPlan.map((action: string, index: number) => (
               <li key={index} className="flex items-start pl-1">
                 <span className="font-medium text-primary mr-2">{index + 1}.</span>
                 <span>{action}</span>

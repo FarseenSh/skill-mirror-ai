@@ -1,5 +1,7 @@
+
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 // Auth functions
 export const auth = {
@@ -222,7 +224,7 @@ export const resourcesManager = {
 
 // Interview practice sessions
 export const interviewsManager = {
-  getUserInterviews: async (userId, status = null) => {
+  getUserInterviews: async (userId: string, status: string | null = null) => {
     try {
       let query = supabase
         .from('interviews')
@@ -242,7 +244,7 @@ export const interviewsManager = {
       return data.map(interview => {
         try {
           if (interview.settings && typeof interview.settings === 'string') {
-            interview.settings = JSON.parse(interview.settings);
+            interview.settings = JSON.parse(interview.settings as string);
           }
         } catch (e) {
           console.error("Error parsing interview settings:", e);
@@ -256,8 +258,21 @@ export const interviewsManager = {
     }
   },
 
-  createInterview: async (interviewData) => {
+  createInterview: async (interviewData: {
+    user_id: string;
+    title: string;
+    job_title: string;
+    interviewer_type: string;
+    settings?: string | Record<string, any>;
+    status: string;
+    [key: string]: any;
+  }) => {
     try {
+      // Ensure settings is a string
+      if (interviewData.settings && typeof interviewData.settings !== 'string') {
+        interviewData.settings = JSON.stringify(interviewData.settings);
+      }
+      
       const { data, error } = await supabase
         .from('interviews')
         .insert(interviewData)
@@ -273,7 +288,7 @@ export const interviewsManager = {
     }
   },
 
-  getInterviewById: async (interviewId) => {
+  getInterviewById: async (interviewId: string) => {
     try {
       const { data, error } = await supabase
         .from('interviews')
@@ -286,7 +301,7 @@ export const interviewsManager = {
       // Parse the settings field if it exists
       try {
         if (data.settings && typeof data.settings === 'string') {
-          data.settings = JSON.parse(data.settings);
+          data.settings = JSON.parse(data.settings as string);
         }
       } catch (e) {
         console.error("Error parsing interview settings:", e);
@@ -300,7 +315,12 @@ export const interviewsManager = {
     }
   },
 
-  updateInterview: async (interviewId, updates) => {
+  updateInterview: async (interviewId: string, updates: {
+    status?: string;
+    feedback?: string;
+    settings?: string | Record<string, any>;
+    [key: string]: any;
+  }) => {
     try {
       // If settings is an object, stringify it
       if (updates.settings && typeof updates.settings === 'object') {
@@ -323,7 +343,7 @@ export const interviewsManager = {
     }
   },
 
-  deleteInterview: async (interviewId) => {
+  deleteInterview: async (interviewId: string) => {
     try {
       const { error } = await supabase
         .from('interviews')
