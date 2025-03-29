@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
+import { ProjectCompletionActions } from "@/components/projects/ProjectCompletionActions";
 
 export default function ProjectDetailsPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -52,9 +53,7 @@ export default function ProjectDetailsPage() {
     try {
       setLoading(true);
       
-      // Load project details
       const projectData = await projectsManager.getProjectById(projectId);
-      // Type assertion to ensure status matches our enum
       const typedProject: Project = {
         ...projectData,
         status: projectData.status as 'pending' | 'in_progress' | 'completed' | 'blocked',
@@ -63,22 +62,17 @@ export default function ProjectDetailsPage() {
       };
       setProject(typedProject);
       
-      // Load project skills
       const skillsData = await projectSkillsManager.getProjectSkills(projectId);
       setSkills(skillsData as ProjectSkill[]);
       
-      // Load project subtasks
       const subtasksData = await projectSubtasksManager.getProjectSubtasks(projectId);
-      // Type assertion for subtasks
       const typedSubtasks: ProjectSubtask[] = subtasksData.map(subtask => ({
         ...subtask,
         status: subtask.status as 'pending' | 'in_progress' | 'completed' | 'blocked'
       }));
       setSubtasks(typedSubtasks);
       
-      // Load project submissions
       const submissionsData = await projectSubmissionsManager.getProjectSubmissions(projectId);
-      // Type assertion for submissions
       const typedSubmissions: ProjectSubmission[] = submissionsData.map(submission => ({
         ...submission,
         submission_type: submission.submission_type as 'code' | 'document' | 'link' | 'other'
@@ -111,22 +105,18 @@ export default function ProjectDetailsPage() {
         submission_type: submissionType,
       });
       
-      // Update status if it was pending
       if (project?.status === 'pending') {
         await projectsManager.updateProjectStatus(projectId, 'in_progress');
         setProject(prev => prev ? { ...prev, status: 'in_progress' as const } : null);
       }
       
-      // Refresh submissions
       const submissionsData = await projectSubmissionsManager.getProjectSubmissions(projectId);
-      // Type assertion for submissions
       const typedSubmissions: ProjectSubmission[] = submissionsData.map(submission => ({
         ...submission,
         submission_type: submission.submission_type as 'code' | 'document' | 'link' | 'other'
       }));
       setSubmissions(typedSubmissions);
       
-      // Clear form
       setSubmissionContent("");
       
       toast({
@@ -147,16 +137,13 @@ export default function ProjectDetailsPage() {
     try {
       await projectSubtasksManager.updateSubtaskStatus(subtaskId, status);
       
-      // Refresh subtasks
       const subtasksData = await projectSubtasksManager.getProjectSubtasks(projectId!);
-      // Type assertion for subtasks
       const typedSubtasks: ProjectSubtask[] = subtasksData.map(subtask => ({
         ...subtask,
         status: subtask.status as 'pending' | 'in_progress' | 'completed' | 'blocked'
       }));
       setSubtasks(typedSubtasks);
       
-      // Update project progress based on completed subtasks
       if (typedSubtasks.length > 0) {
         const completedCount = typedSubtasks.filter(st => st.status === 'completed').length;
         const progress = Math.round((completedCount / typedSubtasks.length) * 100);
@@ -180,30 +167,7 @@ export default function ProjectDetailsPage() {
   };
   
   const handleMarkProjectComplete = async () => {
-    if (!projectId) return;
-    
-    try {
-      await projectsManager.updateProjectStatus(projectId, 'completed');
-      await projectsManager.updateProjectProgress(projectId, 100);
-      
-      setProject(prev => prev ? { 
-        ...prev, 
-        status: 'completed' as const,
-        progress: 100
-      } : null);
-      
-      toast({
-        title: "Project completed",
-        description: "Congratulations on completing this project!",
-      });
-    } catch (err: any) {
-      console.error("Error completing project:", err);
-      toast({
-        title: "Error completing project",
-        description: err.message || "Failed to mark project as complete",
-        variant: "destructive"
-      });
-    }
+    await loadProjectData();
   };
   
   const getStatusColor = (status: string) => {
@@ -278,7 +242,6 @@ export default function ProjectDetailsPage() {
   
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
           <Button 
@@ -308,11 +271,11 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          {project.status !== 'completed' && (
-            <Button onClick={handleMarkProjectComplete}>
-              <CheckCircle2 className="mr-2 h-4 w-4" />
-              Mark Complete
-            </Button>
+          {project.assigned_to === user?.id && (
+            <ProjectCompletionActions 
+              project={project}
+              onProjectComplete={handleMarkProjectComplete}
+            />
           )}
           {project.user_id === user?.id && (
             <Button variant="outline">
@@ -323,7 +286,6 @@ export default function ProjectDetailsPage() {
         </div>
       </div>
       
-      {/* Project Progress */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Project Progress</CardTitle>
@@ -341,7 +303,6 @@ export default function ProjectDetailsPage() {
         </CardContent>
       </Card>
       
-      {/* Project Details Tabs */}
       <Tabs defaultValue="overview">
         <TabsList className="grid grid-cols-4 md:w-[400px]">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -350,7 +311,6 @@ export default function ProjectDetailsPage() {
           <TabsTrigger value="skills">Skills</TabsTrigger>
         </TabsList>
         
-        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4 mt-6">
           <Card>
             <CardHeader>
@@ -402,7 +362,6 @@ export default function ProjectDetailsPage() {
           </Card>
         </TabsContent>
         
-        {/* Tasks Tab */}
         <TabsContent value="subtasks" className="mt-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -474,7 +433,6 @@ export default function ProjectDetailsPage() {
           </Card>
         </TabsContent>
         
-        {/* Submissions Tab */}
         <TabsContent value="submissions" className="space-y-6 mt-6">
           {project.assigned_to === user?.id && project.status !== 'completed' && (
             <Card>
@@ -548,7 +506,6 @@ export default function ProjectDetailsPage() {
           </Card>
         </TabsContent>
         
-        {/* Skills Tab */}
         <TabsContent value="skills" className="mt-6">
           <Card>
             <CardHeader>

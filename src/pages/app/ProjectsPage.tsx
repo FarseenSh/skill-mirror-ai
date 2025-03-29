@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ProjectsList } from "@/components/projects/ProjectsList";
+import { ProjectRecommendations } from "@/components/projects/ProjectRecommendations";
+import { PortfolioProjects } from "@/components/projects/PortfolioProjects";
 import { Project } from "@/types/project";
 import { useAuth } from "@/components/AuthProvider";
 import { projectsManager } from "@/lib/supabase";
@@ -84,21 +86,30 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Projects</CardTitle>
-          <CardDescription>
-            View and manage all your projects in one place.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProjectsList 
-            projects={projects} 
-            isLoading={isLoading} 
-            error={error}
-          />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Projects</CardTitle>
+              <CardDescription>
+                View and manage all your projects in one place.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProjectsList 
+                projects={projects} 
+                isLoading={isLoading} 
+                error={error}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="space-y-6">
+          <ProjectRecommendations />
+          <PortfolioProjects />
+        </div>
+      </div>
     </div>
   );
 }
