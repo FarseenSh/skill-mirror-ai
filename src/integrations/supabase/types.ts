@@ -92,6 +92,7 @@ export type Database = {
           interviewer_type: string
           job_title: string
           recording_url: string | null
+          settings: Json | null
           status: string
           title: string
           updated_at: string
@@ -104,6 +105,7 @@ export type Database = {
           interviewer_type: string
           job_title: string
           recording_url?: string | null
+          settings?: Json | null
           status?: string
           title: string
           updated_at?: string
@@ -116,6 +118,7 @@ export type Database = {
           interviewer_type?: string
           job_title?: string
           recording_url?: string | null
+          settings?: Json | null
           status?: string
           title?: string
           updated_at?: string

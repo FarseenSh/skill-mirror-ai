@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,21 @@ import { claudeService, CLAUDE_MODELS, AI_PERSONALITIES } from "@/services/claud
 import { interviewsManager } from "@/lib/supabase";
 
 interface InterviewFeedbackProps {
-  interview: any;
-  questions: any[];
+  interview: {
+    id: string;
+    title: string;
+    job_title: string;
+    interviewer_type: string;
+    settings?: Record<string, any>;
+    [key: string]: any;
+  };
+  questions: Array<{
+    question: string;
+    context?: string;
+    keyPoints?: string[];
+    exampleStructure?: string;
+    relatedQuestions?: string[];
+  }>;
   onSubmit: (feedback: any) => void;
   onBack: () => void;
 }

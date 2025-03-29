@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -22,7 +22,15 @@ import { InterviewFeedback } from "@/components/interview/InterviewFeedback";
 import { InterviewSetup } from "@/components/interview/InterviewSetup";
 
 interface InterviewSimulatorProps {
-  selectedInterview?: any; // Existing interview data if continuing
+  selectedInterview?: {
+    id: string;
+    title: string;
+    job_title: string;
+    interviewer_type: string;
+    status: string;
+    settings?: Record<string, any>;
+    [key: string]: any;
+  };
   onExit: () => void;
 }
 
@@ -49,12 +57,10 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   
-  // Setup a new interview
   const startNewInterview = async (interviewData) => {
     try {
       setIsLoading(true);
       
-      // Save the new interview to the database
       const savedInterview = await interviewsManager.createInterview({
         user_id: user.id,
         title: `${interviewData.jobTitle} - ${interviewData.interviewType}`,
@@ -69,7 +75,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         status: "in_progress",
       });
       
-      // Generate interview questions based on job title, interview type, and focus areas
       const focusAreasText = interviewData.focusAreas.length > 0 
         ? `with focus on ${interviewData.focusAreas.join(", ")}` 
         : "";
@@ -91,10 +96,8 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         CLAUDE_MODELS.CLAUDE_3_HAIKU
       );
       
-      // Parse questions from the response
       const parsedQuestions = JSON.parse(questionsText);
       
-      // Add any custom questions from the user
       if (interviewData.customQuestions && interviewData.customQuestions.length > 0) {
         for (const customQ of interviewData.customQuestions) {
           parsedQuestions.push({
@@ -117,15 +120,12 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       setRelatedQuestions(parsedQuestions[0].relatedQuestions || []);
       setInterviewState("active");
       
-      // Set up timer if enabled
       if (interviewData.timeLimit) {
-        setTimeRemaining(interviewData.timeLimit * 60); // Convert to seconds
+        setTimeRemaining(interviewData.timeLimit * 60);
       }
       
-      // Generate audio for the first question
       const voiceId = getVoiceIdForInterviewer(interviewData.interviewer);
       generateQuestionAudio(parsedQuestions[0].question, voiceId);
-      
     } catch (error) {
       console.error("Error starting interview:", error);
       toast({
@@ -138,7 +138,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Get voice ID based on interviewer type
   const getVoiceIdForInterviewer = (interviewerType) => {
     switch (interviewerType) {
       case "technical_male":
@@ -152,7 +151,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Generate audio for a question
   const generateQuestionAudio = async (questionText, voiceId) => {
     try {
       setIsLoading(true);
@@ -160,7 +158,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       const url = URL.createObjectURL(audioBlob);
       setAudioUrl(url);
       
-      // Auto-play the question after loading
       setTimeout(() => {
         if (audioRef.current) {
           audioRef.current.volume = volume / 100;
@@ -180,7 +177,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Start recording user response
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -217,13 +213,11 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Stop recording user response
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       
-      // Close the audio tracks to release the microphone
       if (mediaRecorderRef.current.stream) {
         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       }
@@ -235,7 +229,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Handle audio playback controls
   const togglePlayback = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -255,7 +248,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Update volume
   const handleVolumeChange = (value: number[]) => {
     const newVolume = value[0];
     setVolume(newVolume);
@@ -264,9 +256,7 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Move to next/previous question
   const goToNextQuestion = () => {
-    // Clear the timer if it's running
     if (timerIntervalId) {
       clearInterval(timerIntervalId);
       setTimerIntervalId(null);
@@ -279,26 +269,22 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       setRelatedQuestions(questions[nextIndex].relatedQuestions || []);
       setUserResponse("");
       
-      // Reset the timer for the next question if time limit is enabled
       if (currentInterview?.settings?.timeLimit) {
         setTimeRemaining(currentInterview.settings.timeLimit * 60);
         startTimer();
       }
       
-      // Generate audio for the next question
       const voiceId = currentInterview ? 
         getVoiceIdForInterviewer(currentInterview.interviewer_type) : 
         ELEVEN_LABS_VOICES.INTERVIEWER_MALE.voice_id;
       
       generateQuestionAudio(questions[nextIndex].question, voiceId);
     } else {
-      // All questions answered, move to feedback
       setInterviewState("feedback");
     }
   };
   
   const goToPreviousQuestion = () => {
-    // Clear the timer if it's running
     if (timerIntervalId) {
       clearInterval(timerIntervalId);
       setTimerIntervalId(null);
@@ -310,13 +296,11 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       setCurrentQuestion(questions[prevIndex]);
       setRelatedQuestions(questions[prevIndex].relatedQuestions || []);
       
-      // Reset the timer for the previous question if time limit is enabled
       if (currentInterview?.settings?.timeLimit) {
         setTimeRemaining(currentInterview.settings.timeLimit * 60);
         startTimer();
       }
       
-      // Generate audio for the previous question
       const voiceId = currentInterview ? 
         getVoiceIdForInterviewer(currentInterview.interviewer_type) : 
         ELEVEN_LABS_VOICES.INTERVIEWER_MALE.voice_id;
@@ -325,9 +309,7 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Start timer countdown
   const startTimer = () => {
-    // Clear existing timer if any
     if (timerIntervalId) {
       clearInterval(timerIntervalId);
     }
@@ -351,7 +333,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     return intervalId;
   };
   
-  // Format time remaining
   const formatTimeRemaining = (seconds) => {
     if (seconds === null) return null;
     const mins = Math.floor(seconds / 60);
@@ -359,13 +340,11 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
   
-  // Submit feedback for the interview
   const submitFeedback = async (feedback) => {
     try {
       setIsLoading(true);
       
       if (currentInterview) {
-        // Update interview status and add feedback
         await interviewsManager.updateInterview(currentInterview.id, {
           status: "completed",
           feedback: JSON.stringify(feedback),
@@ -377,7 +356,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         });
       }
       
-      // Return to dashboard
       onExit();
     } catch (error) {
       console.error("Error saving feedback:", error);
@@ -391,13 +369,11 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   };
   
-  // Handle audio ended event
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.onended = () => {
         setIsPlaying(false);
         
-        // Start the timer when the question audio finishes playing (if time limit enabled)
         if (timeRemaining !== null && currentInterview?.settings?.timeLimit && !timerIntervalId) {
           startTimer();
         }
@@ -405,7 +381,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   }, [audioRef.current, timeRemaining, currentInterview?.settings?.timeLimit]);
   
-  // Cleanup audio URLs and timers when component unmounts
   useEffect(() => {
     return () => {
       if (audioUrl) {
@@ -418,7 +393,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     };
   }, [audioUrl, timerIntervalId]);
   
-  // Load related questions for the current question
   useEffect(() => {
     if (currentQuestion && currentQuestion.relatedQuestions) {
       setRelatedQuestions(currentQuestion.relatedQuestions);
@@ -427,7 +401,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     }
   }, [currentQuestion]);
   
-  // Render different states of the interview
   if (interviewState === "setup") {
     return <InterviewSetup onStartInterview={startNewInterview} onCancel={onExit} />;
   }
@@ -443,7 +416,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     );
   }
   
-  // Active interview state
   return (
     <Card className="w-full">
       <CardHeader>
@@ -465,7 +437,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {/* Question Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <Badge variant="outline" className="px-3 py-1">
@@ -522,7 +493,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
           />
         </div>
         
-        {/* Context and Hints */}
         <div className="border-t pt-4">
           <h4 className="font-medium mb-2">What This Question Is Testing:</h4>
           <p className="text-muted-foreground">{currentQuestion?.context}</p>
@@ -546,7 +516,6 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
           )}
         </div>
         
-        {/* Response Section */}
         <div className="border-t pt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold">Your Response</h3>
