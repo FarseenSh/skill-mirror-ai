@@ -17,7 +17,7 @@ export default function ScrollAnimation() {
     };
 
     // Run once on initial load
-    handleScroll();
+    setTimeout(handleScroll, 100);
     
     // Add scroll event listener
     window.addEventListener('scroll', handleScroll);

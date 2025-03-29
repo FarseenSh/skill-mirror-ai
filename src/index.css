@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -187,19 +186,19 @@
 
 /* Scroll animations */
 .scroll-fade-in {
-  opacity: 0;
+  opacity: 0.1;
   transform: translateY(20px);
   transition: all 0.8s ease-out;
 }
 
 .scroll-slide-in {
-  opacity: 0;
+  opacity: 0.1;
   transform: translateX(-20px);
   transition: all 0.8s ease-out;
 }
 
 .scroll-scale-in {
-  opacity: 0;
+  opacity: 0.1;
   transform: scale(0.9);
   transition: all 0.8s ease-out;
 }
