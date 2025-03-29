@@ -1,5 +1,7 @@
 
 // ElevenLabs voice API integration
+import { supabase } from '@/integrations/supabase/client';
+
 interface Voice {
   voice_id: string;
   name: string;
@@ -57,60 +59,49 @@ export const ELEVEN_LABS_MODELS = {
   TURBO: 'eleven_turbo_v2',
 };
 
-// ElevenLabs Service - Currently simulated without actual API key
+// ElevenLabs Service
 export const elevenLabsService = {
-  // Convert text to speech (simulated for now)
+  // Convert text to speech using ElevenLabs API
   textToSpeech: async (
     text: string, 
     voiceId: string = ELEVEN_LABS_VOICES.MENTOR_MALE.voice_id,
     modelId: string = ELEVEN_LABS_MODELS.MULTILINGUAL
   ): Promise<Blob> => {
     try {
-      console.log(`Simulating ElevenLabs API call with text: "${text.substring(0, 50)}..." and voice: ${voiceId}`);
+      const { data, error } = await supabase.functions.invoke('elevenlabs', {
+        body: { 
+          text, 
+          voiceId,
+          modelId
+        }
+      });
       
-      // Create a simple audio blob for testing (1 second of silence)
-      const audioContext = new AudioContext();
-      const sampleRate = audioContext.sampleRate;
-      const buffer = audioContext.createBuffer(1, sampleRate, sampleRate);
-      const channelData = buffer.getChannelData(0);
+      if (error) throw new Error(error.message || 'Error calling ElevenLabs API');
       
-      // Fill with silence
-      for (let i = 0; i < channelData.length; i++) {
-        channelData[i] = 0;
+      // Convert base64 to blob
+      const binaryString = atob(data.audio);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
       }
       
-      // Convert to WAV
-      const offlineContext = new OfflineAudioContext(1, sampleRate, sampleRate);
-      const source = offlineContext.createBufferSource();
-      source.buffer = buffer;
-      source.connect(offlineContext.destination);
-      source.start();
-      
-      const renderedBuffer = await offlineContext.startRendering();
-      
-      // Convert buffer to WAV format
-      const wavBlob = new Blob([new Uint8Array(0)], { type: 'audio/wav' });
-      
-      return wavBlob;
+      return new Blob([bytes], { type: 'audio/mp3' });
     } catch (error) {
-      console.error('Error generating speech from ElevenLabs (simulated):', error);
+      console.error('Error generating speech from ElevenLabs:', error);
       throw error;
     }
   },
 
-  // Generate a voice sample (simulated for now)
+  // Generate a voice sample and return a playable URL
   generateVoiceSample: async (
     text: string,
     voiceId: string
   ): Promise<string> => {
     try {
-      console.log(`Simulating voice sample generation for: "${text.substring(0, 50)}..."`);
-      
-      // In a real implementation, we would call the textToSpeech method
-      // For now, return a dummy audio URL
-      return 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      const audioBlob = await elevenLabsService.textToSpeech(text, voiceId);
+      return URL.createObjectURL(audioBlob);
     } catch (error) {
-      console.error('Error generating voice sample (simulated):', error);
+      console.error('Error generating voice sample:', error);
       throw error;
     }
   }

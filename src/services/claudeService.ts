@@ -65,26 +65,16 @@ export const claudeService = {
     temperature: number = 0.7
   ): Promise<string> => {
     try {
-      // For now, we'll simulate responses since we need API key
-      console.log("Claude API would process:", { messages, systemPrompt, model });
+      // Call the Claude edge function
+      const { data, error } = await supabase.functions.invoke('claude', {
+        body: { messages, systemPrompt, model, temperature }
+      });
       
-      // Get the last message
-      const lastMessage = messages[messages.length - 1];
+      if (error) throw new Error(error.message);
       
-      // For simulation purposes, let's generate some helpful responses
-      let response = "I'm your AI colleague. I'd be happy to help with that!";
-      
-      if (lastMessage.content.toLowerCase().includes("interview")) {
-        response = "Let's prepare for your interview. Can you tell me what position you're applying for and what areas you'd like to focus on?";
-      } else if (lastMessage.content.toLowerCase().includes("skill")) {
-        response = "Developing new skills is crucial for career growth. What specific skills are you looking to improve, and what's your current level of proficiency?";
-      } else if (lastMessage.content.toLowerCase().includes("project")) {
-        response = "Let's discuss your project. What are the main goals and challenges you're facing? I can help you create a structured plan to tackle it effectively.";
-      } else if (lastMessage.content.toLowerCase().includes("feedback")) {
-        response = "I'd be happy to give you feedback. Could you share more details about what you're working on? The more specific you are, the more helpful I can be.";
-      }
-      
-      return response;
+      // Extract the response text from the Claude API response
+      const content = data.content[0].text;
+      return content;
     } catch (error) {
       console.error('Error generating response from Claude:', error);
       throw error;
@@ -112,18 +102,18 @@ export const claudeService = {
       // Generate system prompt based on AI colleague personality
       const systemPrompt = `${aiColleague.personality} Your name is ${aiColleague.name} and your role is ${aiColleague.role}.`;
 
-      // Generate AI response to initial message
-      const aiResponse = await claudeService.generateResponse(
-        [{ role: 'user', content: initialMessage }],
-        systemPrompt
-      );
-
       // Save the user message
       await conversationsManager.addMessage({
         conversation_id: conversation.id,
         sender_type: 'user',
         content: initialMessage,
       });
+
+      // Generate AI response to initial message
+      const aiResponse = await claudeService.generateResponse(
+        [{ role: 'user', content: initialMessage }],
+        systemPrompt
+      );
 
       // Save the AI response
       await conversationsManager.addMessage({

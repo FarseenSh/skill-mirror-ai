@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -277,7 +278,7 @@ export default function WorkspacePage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
-              {sampleColleagues.map((colleague) => (
+              {colleagues.map((colleague) => (
                 <div 
                   key={colleague.id}
                   className={`p-4 cursor-pointer flex items-center gap-3 hover:bg-muted transition-colors ${
