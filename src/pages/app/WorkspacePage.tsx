@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -43,14 +42,12 @@ export default function WorkspacePage() {
   const [audioCaching, setAudioCaching] = useState<Record<string, string>>({});
   const messageEndRef = useRef<HTMLDivElement>(null);
   
-  // Use our realtime subscription hook for messages
   const { data: messages, setData: setMessages } = useRealtimeSubscription<Message>(
     'messages',
     [],
     currentConversation ? { conversation_id: currentConversation } : undefined
   );
   
-  // Define some demo AI colleagues
   const sampleColleagues: AIColleague[] = [
     {
       id: 'colleague-1',
@@ -77,8 +74,7 @@ export default function WorkspacePage() {
       voice_id: ELEVEN_LABS_VOICES.INTERVIEWER_FEMALE.voice_id,
     },
   ];
-  
-  // Load user conversations
+
   useEffect(() => {
     const loadConversations = async () => {
       if (!user) return;
@@ -102,30 +98,25 @@ export default function WorkspacePage() {
     loadConversations();
   }, [user]);
   
-  // Auto scroll to bottom of messages
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Handle colleague selection
   const selectColleague = (colleague: AIColleague) => {
     setCurrentColleague(colleague);
     setCurrentConversation(null);
     setMessages([]);
   };
   
-  // Start a new conversation
   const startNewConversation = async () => {
     if (!user || !currentColleague) return;
     
     try {
       setIsLoading(true);
       
-      // Create a new conversation title
       const title = `Chat with ${currentColleague.name}`;
       const initialMessage = `Hello ${currentColleague.name}, I'd like to discuss some work scenarios with you.`;
       
-      // Use the conversation manager to create a new conversation
       const result = await claudeService.createConversation(
         user.id,
         currentColleague.id,
@@ -133,14 +124,13 @@ export default function WorkspacePage() {
         initialMessage
       );
       
-      // Update UI
       setCurrentConversation(result.conversation.id);
-      setMessages(result.messages);
       
-      // Update conversations list
+      const typedMessages = result.messages as Message[];
+      setMessages(typedMessages);
+      
       setConversations(prev => [result.conversation, ...prev]);
       
-      // Generate audio for AI response if voice is available
       if (currentColleague.voice_id) {
         try {
           const aiMessage = result.messages.find(m => m.sender_type === 'ai');
@@ -150,7 +140,6 @@ export default function WorkspacePage() {
               currentColleague.voice_id
             );
             
-            // Cache the audio URL
             setAudioCaching(prev => ({
               ...prev,
               [aiMessage.content]: audioUrl,
@@ -172,33 +161,26 @@ export default function WorkspacePage() {
     }
   };
   
-  // Load existing conversation
   const loadConversation = async (conversationId: string) => {
     try {
       setIsLoading(true);
       
-      // Find the conversation in our list
       const conversation = conversations.find(c => c.id === conversationId);
       if (!conversation) return;
       
-      // Find the AI colleague associated with this conversation
       const colleague = sampleColleagues.find(c => c.id === conversation.ai_colleague_id);
       if (!colleague) return;
       
-      // Set current colleague and conversation
       setCurrentColleague(colleague);
       setCurrentConversation(conversationId);
       
-      // Load messages for this conversation
       const conversationMessages = await conversationsManager.getConversationMessages(conversationId);
       setMessages(conversationMessages);
       
-      // Generate audio URLs for AI messages that haven't been cached yet
       if (colleague.voice_id) {
         const aiMessages = conversationMessages.filter(m => m.sender_type === 'ai');
         
         for (const msg of aiMessages) {
-          // Only generate audio if we haven't cached it yet
           if (!audioCaching[msg.content]) {
             try {
               const audioUrl = await elevenLabsService.generateVoiceSample(
@@ -206,7 +188,6 @@ export default function WorkspacePage() {
                 colleague.voice_id
               );
               
-              // Cache the audio URL
               setAudioCaching(prev => ({
                 ...prev,
                 [msg.content]: audioUrl,
@@ -229,14 +210,12 @@ export default function WorkspacePage() {
     }
   };
   
-  // Send a message
   const sendMessage = async () => {
     if (!message.trim() || !currentConversation || !user) return;
     
     try {
       setIsLoading(true);
       
-      // Add user message to UI immediately for better UX
       const userMessage: Message = {
         sender_type: 'user',
         content: message,
@@ -245,16 +224,13 @@ export default function WorkspacePage() {
       
       setMessages([...messages, userMessage]);
       
-      // Clear input
       setMessage('');
       
-      // Send to API and get AI response
       const aiMessage = await claudeService.addMessageToConversation(
         currentConversation,
         message
       );
       
-      // Generate audio for AI response if voice is available
       if (currentColleague?.voice_id) {
         try {
           const audioUrl = await elevenLabsService.generateVoiceSample(
@@ -262,7 +238,6 @@ export default function WorkspacePage() {
             currentColleague.voice_id
           );
           
-          // Cache the audio URL
           setAudioCaching(prev => ({
             ...prev,
             [aiMessage.content]: audioUrl,
@@ -283,7 +258,6 @@ export default function WorkspacePage() {
     }
   };
   
-  // Get initials for avatar
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -302,7 +276,6 @@ export default function WorkspacePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* AI Colleagues List */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>AI Colleagues</CardTitle>
@@ -334,7 +307,6 @@ export default function WorkspacePage() {
           </CardContent>
         </Card>
 
-        {/* Chat / Workspace Area */}
         <Card className="lg:col-span-3">
           {!currentColleague ? (
             <div className="flex flex-col items-center justify-center h-[500px] p-6">
@@ -426,7 +398,6 @@ export default function WorkspacePage() {
                           <div>
                             <div className="whitespace-pre-wrap">{msg.content}</div>
                             
-                            {/* Show voice player for AI messages if we have audio */}
                             {msg.sender_type === 'ai' && audioCaching[msg.content] && (
                               <div className="mt-2">
                                 <VoicePlayer 

@@ -3,9 +3,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { auth, userProfiles } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
+// Define our custom User type that matches what we get from Supabase
 type User = {
   id: string;
-  email: string;
+  email?: string; // Make email optional to match Supabase's type
   profile?: any;
 } | null;
 
@@ -33,10 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Get user profile if it exists
           try {
             const profile = await userProfiles.getProfile(currentUser.id);
-            setUser({ ...currentUser, profile });
+            setUser({ id: currentUser.id, email: currentUser.email, profile });
           } catch (error) {
             // If profile doesn't exist yet, just use the auth user
-            setUser(currentUser);
+            setUser({ id: currentUser.id, email: currentUser.email });
           }
         } else {
           setUser(null);
@@ -60,10 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Get user profile
       try {
         const profile = await userProfiles.getProfile(authUser.id);
-        setUser({ ...authUser, profile });
+        setUser({ id: authUser.id, email: authUser.email || email, profile });
       } catch (error) {
         // If profile doesn't exist yet, just use the auth user
-        setUser(authUser);
+        setUser({ id: authUser.id, email: authUser.email || email });
       }
       
       toast({
@@ -90,13 +91,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Create an initial user profile
       try {
         const profile = await userProfiles.createProfile(authUser.id, {
-          email: authUser.email,
+          email: authUser.email || email,
           full_name: '',
         });
-        setUser({ ...authUser, profile });
+        setUser({ id: authUser.id, email: authUser.email || email, profile });
       } catch (profileError) {
         console.error("Error creating profile:", profileError);
-        setUser(authUser);
+        setUser({ id: authUser.id, email: authUser.email || email });
       }
       
       toast({
