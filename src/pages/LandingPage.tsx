@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -37,14 +38,14 @@ export default function LandingPage() {
   
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
-      {/* Navigation */}
+      {/* Navigation - Improved alignment */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-        <div className="flex h-16 items-center justify-between px-4 md:px-8 max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 group">
+        <div className="flex h-16 items-center w-full px-0">
+          <div className="flex items-center gap-2 group pl-4 md:pl-8">
             <Logo className="group-hover:scale-110 transition-transform duration-300" />
             <span className="text-xl font-bold group-hover:text-primary transition-colors duration-300">SkillMirror</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6 mx-auto">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
               Features
             </a>
@@ -55,7 +56,7 @@ export default function LandingPage() {
               Skills
             </a>
           </nav>
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 ml-auto pr-4 md:pr-8">
             <ThemeToggle variant="minimal" />
             {user ? (
               <Link to="/app/dashboard">
@@ -67,8 +68,8 @@ export default function LandingPage() {
               <>
                 <Link to="/auth/login">
                   <Button variant="ghost" size="sm" className="transition-all duration-300 hover:scale-105 hover:bg-primary/10">
-                    Log in
-                  </Button>
+                  Log in
+                </Button>
                 </Link>
                 <Link to="/auth/signup">
                   <Button size="sm" className="shadow-lg hover:shadow-skill-purple/50 transition-all duration-300">

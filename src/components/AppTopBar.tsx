@@ -24,7 +24,7 @@ export function AppTopBar() {
   return (
     <>
       <CommandPalette />
-      <div className="sticky top-0 z-30 flex h-16 w-full items-center border-b bg-background">
+      <div className="sticky top-0 z-30 flex h-16 w-full items-center border-b bg-background px-0">
         <div className="flex items-center gap-4 pl-2 md:pl-4">
           <SidebarTrigger />
           <Link to="/app/dashboard" className="flex items-center gap-2">
@@ -33,8 +33,8 @@ export function AppTopBar() {
           </Link>
         </div>
         
-        <div className="hidden md:flex flex-1 items-center justify-center">
-          <Button variant="outline" size="sm" className="items-center text-muted-foreground">
+        <div className="flex flex-1 items-center justify-center">
+          <Button variant="outline" size="sm" className="items-center text-muted-foreground hidden md:flex">
             <Search className="mr-2 h-4 w-4" />
             <span>Search...</span>
             <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100">
@@ -43,7 +43,7 @@ export function AppTopBar() {
           </Button>
         </div>
         
-        <div className="flex items-center gap-2 md:gap-4 pr-2 md:pr-4 ml-auto">
+        <div className="flex items-center gap-2 md:gap-4 ml-auto pr-2 md:pr-4">
           <KeyboardShortcutsHelp />
           <NotificationCenter />
           <ThemeToggle variant="dropdown" />
