@@ -12,7 +12,7 @@ type User = {
 
 type AuthContextType = {
   user: User;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isLoading: boolean;
@@ -53,10 +53,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkUser();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
       setIsLoading(true);
-      const { user: authUser } = await auth.signIn(email, password);
+      const { user: authUser } = await auth.signIn(email, password, { persistSession: rememberMe });
       
       if (!authUser) {
         throw new Error("Authentication failed");

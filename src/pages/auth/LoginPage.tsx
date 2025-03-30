@@ -12,12 +12,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BrainCircuit } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BrainCircuit, LogIn } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -34,7 +37,7 @@ export default function LoginPage() {
 
     try {
       setIsLoading(true);
-      await signIn(email, password);
+      await signIn(email, password, rememberMe);
       navigate("/app/dashboard");
     } catch (error: any) {
       setError(error.message || "Failed to sign in. Please check your credentials.");
@@ -44,22 +47,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30 p-4">
+      <div className="w-full max-w-md animate-fade-up">
         <div className="mb-8 text-center">
-          <div className="flex justify-center mb-2">
-            <BrainCircuit className="h-10 w-10 text-skill-purple" />
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" variant="primary" className="animate-rotate-in" />
           </div>
-          <h1 className="text-2xl font-bold">Welcome Back to SkillMirror</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">
             Sign in to continue your professional growth journey
           </p>
         </div>
 
-        <Card>
+        <Card className="border-t-4 border-t-primary animate-scale-in shadow-lg">
           <form onSubmit={handleSubmit}>
             <CardHeader>
-              <CardTitle>Sign In</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <LogIn className="h-5 w-5" /> Sign In
+              </CardTitle>
               <CardDescription>
                 Enter your credentials to access your account
               </CardDescription>
@@ -73,6 +78,7 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="transition-all duration-200 focus:border-primary"
                   required
                 />
               </div>
@@ -83,22 +89,42 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="transition-all duration-200 focus:border-primary"
                   required
                 />
               </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="rememberMe" 
+                  checked={rememberMe} 
+                  onCheckedChange={(checked) => {
+                    setRememberMe(checked === true);
+                  }}
+                />
+                <Label 
+                  htmlFor="rememberMe" 
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Remember me
+                </Label>
+              </div>
               {error && (
-                <div className="text-sm font-medium text-destructive">{error}</div>
+                <div className="text-sm font-medium text-destructive bg-destructive/10 p-2 rounded animate-shake">{error}</div>
               )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full gap-2 transition-all hover:shadow-md" 
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
               <div className="text-sm text-center text-muted-foreground">
                 Don't have an account?{" "}
                 <Link
                   to="/auth/signup"
-                  className="text-primary hover:text-primary/80 font-medium"
+                  className="text-primary hover:text-primary/80 font-medium hover:underline transition-colors"
                 >
                   Sign up
                 </Link>
