@@ -39,7 +39,7 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
       {/* Navigation */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="container flex h-16 items-center justify-between max-w-7xl mx-auto px-6 md:px-8">
           <div className="flex items-center gap-2 group">
             <Logo className="group-hover:scale-110 transition-transform duration-300" />
             <span className="text-xl font-bold group-hover:text-primary transition-colors duration-300">SkillMirror</span>
