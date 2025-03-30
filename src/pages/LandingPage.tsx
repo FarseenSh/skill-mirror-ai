@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -40,7 +39,7 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
       {/* Navigation */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex h-16 items-center justify-between max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center gap-2 group">
             <Logo className="group-hover:scale-110 transition-transform duration-300" />
             <span className="text-xl font-bold group-hover:text-primary transition-colors duration-300">SkillMirror</span>
@@ -102,7 +101,7 @@ export default function LandingPage() {
           </div>
           
           {/* Hero Content */}
-          <div className="container relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-32 text-center text-white z-10 w-full max-w-full mx-auto">
+          <div className="container relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-32 text-center text-white z-10 w-full max-w-7xl mx-auto">
             <div className="max-w-5xl mx-auto">
               <ScrollAnimation animation="fade-in">
                 <div className="inline-block mb-3 px-4 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-pulse">
@@ -477,7 +476,7 @@ export default function LandingPage() {
 
         {/* Footer section with contact information */}
         <section className="py-16 bg-muted/30 border-t w-full">
-          <div className="container px-4">
+          <div className="container px-4 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1">
                 <div className="flex items-center gap-2 mb-4">

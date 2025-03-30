@@ -20,7 +20,7 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
   userName = ""
 }) => {
   return (
-    <div className="flex items-center justify-between w-full bg-background border-b p-2">
+    <div className="flex items-center justify-between w-full bg-background border-b p-2 px-4 md:px-6">
       <div className="flex items-center gap-4">
         <div className="flex items-center">
           <span className="text-sm font-medium">Simulation Day: {simulationDay}</span>

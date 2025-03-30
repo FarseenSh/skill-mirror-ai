@@ -25,7 +25,7 @@ export function AppTopBar() {
     <>
       <CommandPalette />
       <div className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-background px-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ml-0 md:ml-4">
           <SidebarTrigger />
           <Link to="/app/dashboard" className="flex items-center gap-2">
             <Logo size="sm" />
@@ -39,7 +39,7 @@ export function AppTopBar() {
             </kbd>
           </Button>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mr-0 md:mr-4">
           <KeyboardShortcutsHelp />
           <NotificationCenter />
           <ThemeToggle variant="dropdown" />
