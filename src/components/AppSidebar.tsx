@@ -68,10 +68,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="flex h-14 items-center border-b px-4">
-        <Link to="/app/dashboard" className="flex items-center gap-2">
-          <BrainCircuit className="h-6 w-6 text-skill-purple" />
-          <span className="text-lg font-semibold">SkillMirror</span>
-        </Link>
+        <div className="text-sm font-medium">
+          Current Simulation: <span className="text-skill-purple">Software Engineer</span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

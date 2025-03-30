@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from '@/hooks/use-toast';
@@ -45,7 +44,6 @@ export default function WorkspacePage() {
 }`;
 
   useEffect(() => {
-    // Simulate time passing
     if (!isPaused) {
       const timer = setInterval(() => {
         const time = new Date();
@@ -67,7 +65,6 @@ export default function WorkspacePage() {
   };
 
   const handleSendMessage = (content: string) => {
-    // Add user message
     const userMessage: ChatMessage = {
       id: uuidv4(),
       sender: {
@@ -82,7 +79,6 @@ export default function WorkspacePage() {
     
     setMessages(prev => [...prev, userMessage]);
     
-    // Update status to sent after a delay
     setTimeout(() => {
       setMessages(prev => 
         prev.map(msg => 
@@ -91,7 +87,6 @@ export default function WorkspacePage() {
       );
     }, 1000);
     
-    // Add "typing" indicator
     const typingMessage: ChatMessage = {
       id: uuidv4(),
       sender: {
@@ -108,7 +103,6 @@ export default function WorkspacePage() {
       setMessages(prev => [...prev, typingMessage]);
     }, 1500);
     
-    // Simulate response based on user message
     setTimeout(() => {
       let responseContent = '';
       
@@ -118,7 +112,6 @@ export default function WorkspacePage() {
         responseContent = "Hello! How are you doing with the authentication bug fix?";
       } else if (content.toLowerCase().includes('done') || content.toLowerCase().includes('fixed')) {
         responseContent = "That's great! I'll review your solution soon. Nice work on implementing proper error handling.";
-        // Show skill improvement notification after user says they fixed something
         setTimeout(() => {
           setShowSkillImprovement(true);
         }, 2000);
@@ -126,7 +119,6 @@ export default function WorkspacePage() {
         responseContent = "Thanks for the update! Let me know if you need any help with the authentication issue.";
       }
       
-      // Remove typing indicator and add response
       setMessages(prev => 
         prev.filter(msg => !msg.isTyping).concat({
           id: uuidv4(),
@@ -140,7 +132,6 @@ export default function WorkspacePage() {
         })
       );
       
-      // Update user message status to read
       setMessages(prev => 
         prev.map(msg => 
           msg.id === userMessage.id ? { ...msg, status: 'read' } : msg
@@ -156,7 +147,6 @@ export default function WorkspacePage() {
     });
     
     setTimeout(() => {
-      // Simulate team lead response
       handleSendMessage("I've just submitted my solution for the authentication bug fix.");
     }, 500);
   };
@@ -172,7 +162,7 @@ export default function WorkspacePage() {
         currentTime={currentTime}
         isPaused={isPaused}
         onTogglePause={handleTogglePause}
-        userName={user?.profile?.full_name || 'Alex Johnson'}
+        userName={user?.profile?.full_name || ''}
       />
       
       <div className="space-y-6 mt-4">
