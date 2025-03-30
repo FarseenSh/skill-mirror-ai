@@ -30,10 +30,10 @@ export default function AppLayout() {
   return (
     <>
       <GlobalKeyboardShortcuts />
-      <SidebarProvider>
-        <div className="flex h-screen antialiased text-foreground bg-background w-full">
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex h-screen antialiased text-foreground bg-background w-full overflow-hidden">
           <AppSidebar />
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col overflow-hidden">
             <AppTopBar />
             <main className="flex-1 pt-6 px-4 md:px-8 overflow-auto">
               <Outlet />

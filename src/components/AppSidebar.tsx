@@ -9,6 +9,7 @@ import {
   MessageSquare,
   LogOut,
   Settings,
+  Home,
 } from "lucide-react";
 import {
   Sidebar,
@@ -77,6 +78,17 @@ export function AppSidebar() {
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/"
+                    className={`nav-link ${isActive("/") ? "nav-link-active" : ""}`}
+                  >
+                    <Home className="h-5 w-5" />
+                    <span>Back to Landing</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild>

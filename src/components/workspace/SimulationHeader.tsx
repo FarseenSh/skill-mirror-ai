@@ -49,7 +49,7 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
           )}
         </Button>
         <Link to="/">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="flex items-center">
             <Home className="h-4 w-4 mr-2" />
             Back to Landing
           </Button>
