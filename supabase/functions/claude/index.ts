@@ -20,8 +20,15 @@ serve(async (req) => {
     if (!CLAUDE_API_KEY) {
       return new Response(
         JSON.stringify({ 
-          error: 'API key not configured', 
-          content: "I'm a simulated AI assistant. The actual Claude API key is not configured. In a real environment, I would process your message and respond accordingly."
+          content: [{ 
+            type: 'text', 
+            text: "I'm a simulated AI assistant. The actual Claude API key is not configured. In a real environment, I would process your message and respond accordingly." 
+          }],
+          role: 'assistant',
+          id: 'simulated-response',
+          model: 'claude-3-haiku-20240307',
+          stop_reason: 'end_turn',
+          type: 'message'
         }),
         {
           status: 200, // Return 200 to avoid breaking the frontend
@@ -30,7 +37,15 @@ serve(async (req) => {
       );
     }
 
-    const { messages, systemPrompt, model, temperature } = await req.json();
+    // Parse request body safely
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      throw new Error('Invalid request body');
+    }
+
+    const { messages, systemPrompt, model, temperature } = body;
 
     // Attempt to call Claude API
     try {
@@ -68,12 +83,15 @@ serve(async (req) => {
       // Return a simulated response instead of failing
       return new Response(
         JSON.stringify({ 
-          id: 'simulated-claude-response',
           content: [{ 
             type: 'text', 
             text: "I'm a simulated AI assistant. The Claude API is currently unavailable or not configured correctly. In a real environment, I would process your message and respond with AI-generated content." 
           }],
-          role: 'assistant'
+          role: 'assistant',
+          id: 'simulated-claude-response',
+          model: 'claude-3-haiku-20240307',
+          stop_reason: 'end_turn',
+          type: 'message'
         }),
         {
           status: 200,
@@ -86,8 +104,15 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'An error occurred processing your request',
-        content: "I'm a simulated AI assistant. There was an error processing your request. In a real environment, I would provide a helpful response to your message."
+        content: [{ 
+          type: 'text', 
+          text: "I'm a simulated AI assistant. There was an error processing your request. In a real environment, I would provide a helpful response to your message." 
+        }],
+        role: 'assistant',
+        id: 'error-simulated-response',
+        model: 'claude-3-haiku-20240307',
+        stop_reason: 'end_turn',
+        type: 'message'
       }),
       {
         status: 200, // Return 200 to avoid breaking the frontend

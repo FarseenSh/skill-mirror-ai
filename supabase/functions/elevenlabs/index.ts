@@ -31,7 +31,15 @@ serve(async (req) => {
       );
     }
 
-    const { text, voiceId, modelId } = await req.json();
+    // Parse request body safely
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      throw new Error('Invalid request body');
+    }
+
+    const { text, voiceId, modelId } = body;
 
     if (!text) {
       throw new Error('Text is required');
@@ -62,16 +70,24 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
+        const errorData = await response.text();
+        console.error('ElevenLabs API error response:', errorData);
         throw new Error(`ElevenLabs API error: ${response.statusText}`);
       }
 
       // Get audio data as array buffer
       const audioArrayBuffer = await response.arrayBuffer();
       
-      // Convert to base64
-      const base64Audio = btoa(
-        String.fromCharCode(...new Uint8Array(audioArrayBuffer))
-      );
+      // Convert to base64 safely - using a more efficient approach
+      const uint8Array = new Uint8Array(audioArrayBuffer);
+      const chunks = [];
+      const chunkSize = 1024;
+      
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        chunks.push(String.fromCharCode.apply(null, uint8Array.slice(i, i + chunkSize)));
+      }
+      
+      const base64Audio = btoa(chunks.join(''));
 
       return new Response(
         JSON.stringify({ 
