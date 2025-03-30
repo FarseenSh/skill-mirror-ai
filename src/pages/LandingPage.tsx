@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -487,13 +488,13 @@ export default function LandingPage() {
                   Elevate your professional skills with AI-powered simulations and personalized feedback.
                 </p>
                 <div className="flex space-x-4">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a href="https://x.com/LifeHodlr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                     <TwitterIcon className="h-5 w-5" />
                   </a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a href="https://linkedin.com" className="text-muted-foreground hover:text-primary transition-colors">
                     <LinkedinIcon className="h-5 w-5" />
                   </a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a href="https://github.com/FarseenSh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                     <GithubIcon className="h-5 w-5" />
                   </a>
                 </div>
@@ -519,13 +520,13 @@ export default function LandingPage() {
                 <ul className="space-y-3">
                   <li className="flex items-center gap-2">
                     <GithubIcon className="h-5 w-5 text-primary flex-shrink-0" />
-                    <a href="https://github.com/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
+                    <a href="https://github.com/FarseenSh" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                       GitHub
                     </a>
                   </li>
                   <li className="flex items-center gap-2">
                     <TwitterIcon className="h-5 w-5 text-primary flex-shrink-0" />
-                    <a href="https://twitter.com/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
+                    <a href="https://x.com/LifeHodlr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                       Twitter
                     </a>
                   </li>
