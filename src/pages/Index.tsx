@@ -94,7 +94,7 @@ const Index = () => {
             Join SkillMirror today and start tracking your professional growth journey.
           </p>
           <Link to="/auth/signup">
-            <Button size="lg">
+            <Button size="lg" className="animate-pulse">
               Get Started Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

@@ -6,12 +6,10 @@ type ScrollAnimationProps = {
   children: React.ReactNode;
   className?: string;
   threshold?: number;
-  animation?: 'fade-up' | 'fade-in' | 'slide-in-right' | 'slide-in-left' | 'scale-in' | 'rotate-in';
+  animation?: 'fade-up' | 'fade-in' | 'slide-in-right' | 'slide-in-left' | 'scale-in';
   delay?: number;
-  duration?: 'faster' | 'fast' | 'normal' | 'slow' | 'slower';
   runOnce?: boolean;
   initiallyVisible?: boolean;
-  offset?: number;
 };
 
 export const ScrollAnimation = ({
@@ -20,10 +18,8 @@ export const ScrollAnimation = ({
   threshold = 0.1,
   animation = 'fade-up',
   delay = 0,
-  duration = 'normal',
   runOnce = true,
-  initiallyVisible = false,
-  offset = 0
+  initiallyVisible = true
 }: ScrollAnimationProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(initiallyVisible);
@@ -31,19 +27,16 @@ export const ScrollAnimation = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Add slight delay to create a staggered effect between elements
-        setTimeout(() => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            if (runOnce && ref.current) {
-              observer.unobserve(ref.current);
-            }
-          } else if (!runOnce) {
-            setIsVisible(false);
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          if (runOnce && ref.current) {
+            observer.unobserve(ref.current);
           }
-        }, offset);
+        } else if (!runOnce) {
+          setIsVisible(false);
+        }
       },
-      { threshold, rootMargin: '10px' }
+      { threshold }
     );
 
     const currentRef = ref.current;
@@ -56,7 +49,7 @@ export const ScrollAnimation = ({
         observer.unobserve(currentRef);
       }
     };
-  }, [threshold, runOnce, offset]);
+  }, [threshold, runOnce]);
 
   const getAnimationClass = () => {
     if (!isVisible) return 'opacity-0';
@@ -72,8 +65,6 @@ export const ScrollAnimation = ({
         return 'animate-slide-in-left';
       case 'scale-in':
         return 'animate-scale-in';
-      case 'rotate-in':
-        return 'animate-rotate-in';
       default:
         return 'animate-fade-in';
     }
@@ -84,37 +75,15 @@ export const ScrollAnimation = ({
     return `delay-${delay * 100}`;
   };
 
-  const getDurationClass = () => {
-    switch (duration) {
-      case 'faster':
-        return 'animate-duration-faster';
-      case 'fast':
-        return 'animate-duration-fast';
-      case 'normal':
-        return 'animate-duration-normal';
-      case 'slow':
-        return 'animate-duration-slow';
-      case 'slower':
-        return 'animate-duration-slower';
-      default:
-        return 'animate-duration-normal';
-    }
-  };
-
   return (
     <div
       ref={ref}
       className={cn(
-        'transition-all',
+        'transition-all duration-700',
         getAnimationClass(),
         getDelayClass(),
-        getDurationClass(),
         className
       )}
-      style={{ 
-        visibility: isVisible ? 'visible' : 'hidden',
-        transitionDelay: `${delay * 100}ms`
-      }}
     >
       {children}
     </div>
