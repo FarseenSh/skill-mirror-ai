@@ -16,7 +16,7 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
   currentTime,
   isPaused,
   onTogglePause,
-  userName = "Alex Johnson"
+  userName = ""
 }) => {
   return (
     <div className="flex items-center justify-between w-full bg-background border-b p-2">
@@ -47,12 +47,14 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
             </>
           )}
         </Button>
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-            {userName.split(' ').map(n => n[0]).join('')}
+        {userName && (
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+              {userName.split(' ').map(n => n[0]).join('')}
+            </div>
+            <span className="text-sm font-medium">{userName}</span>
           </div>
-          <span className="text-sm font-medium">{userName}</span>
-        </div>
+        )}
       </div>
     </div>
   );
