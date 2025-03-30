@@ -1,4 +1,3 @@
-
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
@@ -16,10 +15,13 @@ export const auth = {
   },
   
   signIn: async (email: string, password: string, options?: { persistSession?: boolean }) => {
+    if (options?.persistSession !== undefined) {
+      supabase.auth.setAutoRefreshToken(options.persistSession);
+    }
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options
     });
     
     if (error) throw error;

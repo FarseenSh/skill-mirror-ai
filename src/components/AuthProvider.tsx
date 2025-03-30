@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, userProfiles } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -56,9 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
       setIsLoading(true);
-      // The error is here - we're passing 3 arguments but the function only accepts 2
-      // Let's check the auth.signIn implementation in supabase.ts and fix it
-      const { user: authUser } = await auth.signIn(email, password);
+      // Now correctly pass the rememberMe option to our auth.signIn function
+      const { user: authUser } = await auth.signIn(email, password, { persistSession: rememberMe });
       
       if (!authUser) {
         throw new Error("Authentication failed");
