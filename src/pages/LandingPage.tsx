@@ -1,6 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { DisplayCardsDemo } from "@/components/ui/display-cards-demo";
 import {
   ArrowRight,
   Award,
@@ -171,6 +171,34 @@ export default function LandingPage() {
             <div className="w-8 h-12 rounded-full border-2 border-white/50 flex items-start justify-center p-1 animate-pulse">
               <div className="w-1 h-2 bg-white/80 rounded-full animate-[bounce_1.5s_ease_infinite]"></div>
             </div>
+          </div>
+        </section>
+
+        {/* Display Cards Demo */}
+        <section className="py-16 bg-gradient-to-br from-background to-muted/30">
+          <div className="container px-4">
+            <ScrollAnimation animation="fade-up">
+              <div className="text-center mb-12">
+                <div className="inline-block mb-3 px-4 py-1 rounded-full bg-skill-purple/10">
+                  <span className="text-sm font-medium text-skill-purple flex items-center gap-1">
+                    <Sparkles className="h-4 w-4" />
+                    Featured Content
+                  </span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                  Explore Our Resources
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Discover the latest skills, trends, and learning opportunities
+                </p>
+              </div>
+            </ScrollAnimation>
+            
+            <ScrollAnimation animation="fade-up" delay={1}>
+              <div className="w-full max-w-4xl mx-auto">
+                <DisplayCardsDemo />
+              </div>
+            </ScrollAnimation>
           </div>
         </section>
 
