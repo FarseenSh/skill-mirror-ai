@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { CSSProperties } from "react";
+import { SkillMirrorLogo } from "./SkillMirrorLogo";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -31,24 +32,8 @@ export const Logo = ({ size = "md", variant = "primary", className, style }: Log
       )}
       style={style}
     >
-      {/* Enhanced 3D logo with improved effects */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-skill-blue/40 to-skill-purple/20 animate-pulse"></div>
-      <div className="absolute -inset-1 bg-gradient-to-br from-skill-blue/60 to-skill-purple/60 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      
-      {/* Left highlight */}
-      <div className="absolute top-0 left-0 w-2 h-full bg-white/20 skew-x-12 transform -translate-x-2 group-hover:translate-x-12 transition-transform duration-700"></div>
-      
-      {/* Bottom reflection */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-      
-      {/* 3D effect for the text */}
-      <div className="relative z-10 flex items-center justify-center">
-        <span className="tracking-tight font-bold text-white relative">
-          <span className="absolute -top-[1px] -left-[1px] text-skill-lightBlue/50 blur-[0.5px]">SM</span>
-          <span className="absolute -top-[0.5px] -left-[0.5px] text-white/70">SM</span>
-          SM
-        </span>
-      </div>
+      {/* SVG Logo */}
+      <SkillMirrorLogo width={size === "sm" ? 32 : size === "md" ? 40 : 48} height={size === "sm" ? 32 : size === "md" ? 40 : 48} />
     </div>
   );
 };

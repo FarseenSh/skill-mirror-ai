@@ -10,14 +10,14 @@ import {
   MessageSquare,
   ArrowRight
 } from "lucide-react";
-import { Logo } from "@/components/Logo";
+import { SkillMirrorLogo } from "@/components/SkillMirrorLogo";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/10">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/10 w-full max-w-full">
       <div className="container max-w-5xl px-4 py-8 sm:px-6 lg:px-8 text-center">
         <div className="flex justify-center mb-6">
-          <Logo size="lg" className="h-16 w-16" />
+          <SkillMirrorLogo width={120} height={120} className="animate-pulse" />
         </div>
         
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">Welcome to SkillMirror</h1>
