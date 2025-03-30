@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -69,7 +70,7 @@ export default function LandingPage() {
                   </Button>
                 </Link>
                 <Link to="/auth/signup">
-                  <Button size="sm" className="shadow-lg hover:shadow-skill-purple/50 transition-all duration-300 hover:scale-105">
+                  <Button size="sm" className="shadow-lg hover:shadow-skill-purple/50 transition-all duration-300">
                     Get Started
                   </Button>
                 </Link>
@@ -125,7 +126,7 @@ export default function LandingPage() {
               <ScrollAnimation animation="fade-up" delay={3}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                   <Link to="/auth/signup">
-                    <Button size="lg" className="bg-white text-skill-purple hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-white/30 group">
+                    <Button size="lg" className="bg-white text-skill-purple hover:bg-white/90 transition-all duration-300 shadow-xl hover:shadow-white/30 group">
                       Start Free Trial
                       <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
@@ -447,7 +448,7 @@ export default function LandingPage() {
             <ScrollAnimation animation="fade-up" delay={5}>
               <div className="mt-16 text-center">
                 <Link to="/auth/signup">
-                  <Button size="lg" className="bg-gradient-to-r from-skill-blue to-skill-purple text-white hover:shadow-lg hover:shadow-skill-purple/30 transition-all duration-300 hover:scale-105 group relative overflow-hidden">
+                  <Button size="lg" className="bg-gradient-to-r from-skill-blue to-skill-purple text-white hover:shadow-lg hover:shadow-skill-purple/30 transition-all duration-300 group relative overflow-hidden">
                     <span className="relative z-10 flex items-center">
                       Start Your First Simulation
                       <Rocket className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
@@ -497,4 +498,18 @@ export default function LandingPage() {
                   animation="fade-up" 
                   delay={index * 0.1 + 1}
                 >
-                  <div className={`flex flex-col items-center justify-center p-4 rounded-xl border border-border hover:border-${skill.color} bg-card hover:bg-${skill.color}/5 transition
+                  <div className={`flex flex-col items-center justify-center p-4 rounded-xl border border-border hover:border-${skill.color} bg-card hover:bg-${skill.color}/5 transition-all duration-300 text-center group`}>
+                    <div className={`mb-3 rounded-full bg-${skill.color}/10 p-3 group-hover:bg-${skill.color}/20 transition-colors duration-300`}>
+                      <skill.icon className={`h-6 w-6 text-${skill.color} group-hover:scale-110 transition-transform duration-300`} />
+                    </div>
+                    <h3 className={`text-sm font-medium group-hover:text-${skill.color} transition-colors duration-300`}>{skill.name}</h3>
+                  </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}

@@ -21,13 +21,14 @@ export const Logo = ({ size = "md", variant = "primary", className }: LogoProps)
 
   return (
     <div className={cn(
-      "rounded-full flex items-center justify-center font-bold transition-all duration-300 shadow-md relative overflow-hidden",
+      "rounded-full flex items-center justify-center font-bold transition-all duration-300 shadow-md relative overflow-hidden group",
       sizeClasses[size],
       variantClasses[variant],
       className
     )}>
-      {/* Enhanced logo with glow effect */}
+      {/* Enhanced logo with improved glow effect */}
       <div className="absolute inset-0 bg-gradient-to-tr from-skill-blue/20 to-skill-purple/20 animate-pulse"></div>
+      <div className="absolute -inset-1 bg-gradient-to-br from-skill-blue/40 to-skill-purple/40 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <span className="tracking-tight relative z-10">SM</span>
     </div>
   );
