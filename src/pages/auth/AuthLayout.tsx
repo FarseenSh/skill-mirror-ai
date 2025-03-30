@@ -8,7 +8,9 @@ export default function AuthLayout() {
       <div className="absolute top-4 right-6">
         <ThemeToggle variant="minimal" />
       </div>
-      <Outlet />
+      <div className="flex justify-center items-center h-full">
+        <Outlet />
+      </div>
     </div>
   );
 }

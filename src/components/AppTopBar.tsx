@@ -33,7 +33,7 @@ export function AppTopBar() {
           </Link>
         </div>
         
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <Button variant="outline" size="sm" className="items-center text-muted-foreground hidden md:flex">
             <Search className="mr-2 h-4 w-4" />
             <span>Search...</span>
@@ -53,7 +53,7 @@ export function AppTopBar() {
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>

@@ -20,7 +20,7 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
   userName = ""
 }) => {
   return (
-    <div className="flex items-center justify-between w-full bg-background border-b px-0">
+    <div className="flex items-center w-full bg-background border-b px-0">
       <div className="flex items-center gap-4 pl-4 md:pl-8">
         <div className="flex items-center">
           <span className="text-sm font-medium">Simulation Day: {simulationDay}</span>
@@ -29,6 +29,9 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
           <Clock className="h-4 w-4 mr-2" />
           <span className="text-sm">{currentTime}</span>
         </div>
+      </div>
+      <div className="flex-1 flex items-center justify-center">
+        {/* Center content if needed */}
       </div>
       <div className="flex items-center gap-2 md:gap-4 ml-auto pr-4 md:pr-8">
         <Button

@@ -45,17 +45,19 @@ export default function LandingPage() {
             <Logo className="group-hover:scale-110 transition-transform duration-300" />
             <span className="text-xl font-bold group-hover:text-primary transition-colors duration-300">SkillMirror</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6 mx-auto">
-            <a href="#features" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              How It Works
-            </a>
-            <a href="#skills" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Skills
-            </a>
-          </nav>
+          <div className="hidden md:flex items-center justify-center flex-1">
+            <nav className="flex items-center gap-6">
+              <a href="#features" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
+                Features
+              </a>
+              <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
+                How It Works
+              </a>
+              <a href="#skills" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
+                Skills
+              </a>
+            </nav>
+          </div>
           <div className="flex items-center gap-2 md:gap-4 ml-auto pr-4 md:pr-8">
             <ThemeToggle variant="minimal" />
             {user ? (

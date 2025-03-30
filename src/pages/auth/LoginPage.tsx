@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30 p-4">
-      <div className="w-full max-w-md animate-fade-up">
+      <div className="w-full max-w-md animate-fade-up mx-auto">
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
             <Logo size="lg" variant="primary" className="animate-rotate-in" />
@@ -59,7 +59,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="border-t-4 border-t-primary animate-scale-in shadow-lg">
+        <Card className="border-t-4 border-t-primary animate-scale-in shadow-lg mx-auto">
           <form onSubmit={handleSubmit}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
