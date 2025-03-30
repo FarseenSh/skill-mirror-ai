@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
       setIsLoading(true);
-      // Correctly pass the rememberMe option to our auth.signIn function
+      // Pass the rememberMe option to our auth.signIn function
       const { user: authUser } = await auth.signIn(email, password, { persistSession: rememberMe });
       
       if (!authUser) {

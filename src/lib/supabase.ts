@@ -16,18 +16,20 @@ export const auth = {
   },
   
   signIn: async (email: string, password: string, options?: { persistSession?: boolean }) => {
-    // We need to use the correct method to handle persistent sessions
-    // In Supabase v2, we need to use the options parameter in signInWithPassword
+    // In Supabase v2, persistSession is a top-level option in the auth client
+    // We need to use signInWithPassword without passing persistSession directly
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        // Pass the persistSession flag if provided
-        ...(options?.persistSession !== undefined && { 
-          persistSession: options.persistSession 
-        })
-      }
     });
+    
+    // If the user wants to persist the session (remember me feature),
+    // we need to ensure we're using the correct approach
+    if (options?.persistSession === false) {
+      // For non-persistent sessions, we can manually handle session after login
+      // This is equivalent to "don't remember me"
+      localStorage.setItem('supabase.auth.token', '');
+    }
     
     if (error) throw error;
     return data;
