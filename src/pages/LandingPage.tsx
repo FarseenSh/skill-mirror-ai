@@ -33,13 +33,34 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
+import { useEffect, useRef, useState } from "react";
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const position = window.scrollY;
+      setScrollPosition(position);
+      
+      document.querySelectorAll('[data-scroll]').forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight * 0.8 && rect.bottom > 0;
+        
+        if (isVisible) {
+          element.classList.add('animate-reveal');
+        }
+      });
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navigation */}
+    <div className="flex flex-col min-h-screen perspective-1000" ref={scrollRef}>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 group">
@@ -52,12 +73,6 @@ export default function LandingPage() {
             </a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
               How It Works
-            </a>
-            <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Testimonials
-            </a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Pricing
             </a>
           </nav>
           <div className="flex items-center gap-4">
@@ -86,26 +101,33 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex-1">
-        {/* Hero Section - Enhanced with more targeted content */}
-        <section className="relative overflow-hidden">
-          {/* 3D Geometric Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-skill-blue via-skill-purple to-skill-deepPurple opacity-90">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2784&q=80')] bg-cover bg-center opacity-10"></div>
+      <main className="flex-1 overflow-hidden">
+        <section className="relative min-h-[100vh]">
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-skill-blue via-skill-purple to-skill-deepPurple opacity-90"
+            style={{ transform: `translateY(${scrollPosition * 0.4}px)` }}
+          >
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2784&q=80')] bg-cover bg-center opacity-10"
+               style={{ transform: `translateY(${scrollPosition * 0.2}px)` }}
+            ></div>
             <div className="absolute w-full h-full bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0)_60%)]"></div>
             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"></div>
           </div>
           
-          {/* Animated Particles */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="particle-1"></div>
-            <div className="particle-2"></div>
-            <div className="particle-3"></div>
-            <div className="absolute top-[20%] right-[15%] w-20 h-20 rounded-full bg-white/10 backdrop-blur-md animate-[float_20s_ease-in-out_infinite]"></div>
-            <div className="absolute bottom-[30%] left-[10%] w-32 h-32 rounded-full bg-white/5 backdrop-blur-sm animate-[float_25s_ease-in-out_infinite_reverse]"></div>
+            <div className="particle-1" style={{ transform: `translate(${scrollPosition * 0.05}px, ${-scrollPosition * 0.1}px)` }}></div>
+            <div className="particle-2" style={{ transform: `translate(${-scrollPosition * 0.07}px, ${scrollPosition * 0.05}px)` }}></div>
+            <div className="particle-3" style={{ transform: `translate(${scrollPosition * 0.09}px, ${-scrollPosition * 0.03}px)` }}></div>
+            <div 
+              className="absolute top-[20%] right-[15%] w-20 h-20 rounded-full bg-white/10 backdrop-blur-md animate-[float_20s_ease-in-out_infinite]"
+              style={{ transform: `translateY(${scrollPosition * 0.15}px) rotate(${scrollPosition * 0.05}deg)` }}
+            ></div>
+            <div 
+              className="absolute bottom-[30%] left-[10%] w-32 h-32 rounded-full bg-white/5 backdrop-blur-sm animate-[float_25s_ease-in-out_infinite_reverse]"
+              style={{ transform: `translateY(${-scrollPosition * 0.1}px) rotate(${-scrollPosition * 0.02}deg)` }}
+            ></div>
           </div>
           
-          {/* Hero Content */}
           <div className="container relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-32 text-center text-white z-10">
             <div className="max-w-5xl mx-auto">
               <ScrollAnimation animation="fade-in">
@@ -118,19 +140,22 @@ export default function LandingPage() {
               </ScrollAnimation>
               
               <ScrollAnimation animation="fade-up" delay={1}>
-                <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 drop-shadow-sm">
+                <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 drop-shadow-sm"
+                    style={{ transform: `translateY(${-scrollPosition * 0.15}px)` }}>
                   Master Real-World Skills with <span className="text-skill-lightBlue">AI Simulation</span>
                 </h1>
               </ScrollAnimation>
               
               <ScrollAnimation animation="fade-up" delay={2}>
-                <p className="mb-8 max-w-2xl mx-auto text-xl sm:text-2xl text-white/90">
+                <p className="mb-8 max-w-2xl mx-auto text-xl sm:text-2xl text-white/90"
+                   style={{ transform: `translateY(${-scrollPosition * 0.1}px)` }}>
                   Practice with AI colleagues in realistic workplace scenarios and get personalized feedback to accelerate your career growth
                 </p>
               </ScrollAnimation>
               
               <ScrollAnimation animation="fade-up" delay={3}>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+                     style={{ transform: `translateY(${-scrollPosition * 0.05}px)` }}>
                   <Link to="/auth/signup">
                     <Button size="lg" className="bg-white text-skill-purple hover:bg-white/90 transition-all duration-300 shadow-xl hover:shadow-white/30 group">
                       Start Free Trial
@@ -140,24 +165,26 @@ export default function LandingPage() {
                 </div>
               </ScrollAnimation>
               
-              {/* Key Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
                 <ScrollAnimation animation="fade-up" delay={4}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20"
+                       style={{ transform: `translateY(${Math.max(0, 100 - scrollPosition * 0.4)}px)` }}>
                     <h3 className="text-2xl font-bold mb-1">500+</h3>
                     <p className="text-white/80">Workplace Scenarios</p>
                   </div>
                 </ScrollAnimation>
                 
                 <ScrollAnimation animation="fade-up" delay={5}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20"
+                       style={{ transform: `translateY(${Math.max(0, 150 - scrollPosition * 0.4)}px)` }}>
                     <h3 className="text-2xl font-bold mb-1">94%</h3>
                     <p className="text-white/80">Skill Improvement</p>
                   </div>
                 </ScrollAnimation>
                 
                 <ScrollAnimation animation="fade-up" delay={6}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20"
+                       style={{ transform: `translateY(${Math.max(0, 200 - scrollPosition * 0.4)}px)` }}>
                     <h3 className="text-2xl font-bold mb-1">12K+</h3>
                     <p className="text-white/80">Active Users</p>
                   </div>
@@ -166,7 +193,6 @@ export default function LandingPage() {
             </div>
           </div>
           
-          {/* Mouse Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <div className="w-8 h-12 rounded-full border-2 border-white/50 flex items-start justify-center p-1 animate-pulse">
               <div className="w-1 h-2 bg-white/80 rounded-full animate-[bounce_1.5s_ease_infinite]"></div>
@@ -174,57 +200,67 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Display Cards Demo */}
-        <section className="py-16 bg-gradient-to-br from-background to-muted/30">
-          <div className="container px-4">
-            <ScrollAnimation animation="fade-up">
-              <div className="text-center mb-12">
-                <div className="inline-block mb-3 px-4 py-1 rounded-full bg-skill-purple/10">
-                  <span className="text-sm font-medium text-skill-purple flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" />
-                    Featured Content
-                  </span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-                  Explore Our Resources
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Discover the latest skills, trends, and learning opportunities
-                </p>
+        <section className="py-16 bg-gradient-to-br from-background to-muted/30 relative overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-skill-blue/5 to-skill-purple/5" 
+            style={{ transform: `translateY(${(scrollPosition - 500) * 0.1}px)` }}
+          ></div>
+          
+          <div className="container px-4 relative">
+            <div data-scroll className="text-center mb-12">
+              <div className="inline-block mb-3 px-4 py-1 rounded-full bg-skill-purple/10">
+                <span className="text-sm font-medium text-skill-purple flex items-center gap-1">
+                  <Sparkles className="h-4 w-4" />
+                  Featured Content
+                </span>
               </div>
-            </ScrollAnimation>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                Explore Our Resources
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Discover the latest skills, trends, and learning opportunities
+              </p>
+            </div>
             
-            <ScrollAnimation animation="fade-up" delay={1}>
-              <div className="w-full max-w-4xl mx-auto">
+            <div data-scroll className="w-full max-w-4xl mx-auto transform transition-all duration-1000">
+              <div className="transform-gpu" style={{ transform: `perspective(1000px) rotateX(${Math.min(5, (scrollPosition - 700) * 0.01)}deg) rotateY(${Math.min(5, (scrollPosition - 700) * 0.005)}deg)` }}>
                 <DisplayCardsDemo />
               </div>
-            </ScrollAnimation>
+            </div>
+            
+            <div className="absolute top-20 left-10 w-16 h-16 rounded-full bg-skill-blue/10 animate-float" 
+                 style={{ transform: `translateY(${(scrollPosition - 700) * 0.05}px)` }}></div>
+            <div className="absolute bottom-20 right-10 w-24 h-24 rounded-full bg-skill-purple/10 animate-float animate-delay-200" 
+                 style={{ transform: `translateY(${-(scrollPosition - 700) * 0.08}px)` }}></div>
           </div>
         </section>
 
-        {/* Key Features Section - Redesigned */}
-        <section id="features" className="py-24 bg-muted/30">
+        <section id="features" className="py-24 bg-muted/30 relative overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(67,97,238,0.1),transparent_70%)]" 
+            style={{ transform: `translateY(${(scrollPosition - 1000) * 0.1}px)` }}
+          ></div>
+          
           <div className="container px-4">
-            <ScrollAnimation animation="fade-up">
-              <div className="text-center mb-16">
-                <div className="inline-block mb-3 px-4 py-1 rounded-full bg-primary/10">
-                  <span className="text-sm font-medium text-primary flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" />
-                    Platform Highlights
-                  </span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-                  Accelerate Your Career Development
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  SkillMirror combines AI technology with proven learning methodologies to create a uniquely effective skill development experience.
-                </p>
+            <div data-scroll className="text-center mb-16">
+              <div className="inline-block mb-3 px-4 py-1 rounded-full bg-primary/10">
+                <span className="text-sm font-medium text-primary flex items-center gap-1">
+                  <Sparkles className="h-4 w-4" />
+                  Platform Highlights
+                </span>
               </div>
-            </ScrollAnimation>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                Accelerate Your Career Development
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                SkillMirror combines AI technology with proven learning methodologies to create a uniquely effective skill development experience.
+              </p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <ScrollAnimation animation="slide-in-left" delay={1}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 100 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-skill-blue w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-skill-blue/10 p-3 w-fit group-hover:bg-skill-blue/20 transition-colors duration-300">
@@ -246,10 +282,11 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
 
-              <ScrollAnimation animation="fade-up" delay={2}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 150 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-skill-purple w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-skill-purple/10 p-3 w-fit group-hover:bg-skill-purple/20 transition-colors duration-300">
@@ -271,10 +308,11 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
 
-              <ScrollAnimation animation="slide-in-right" delay={3}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 200 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-skill-deepPurple w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-skill-deepPurple/10 p-3 w-fit group-hover:bg-skill-deepPurple/20 transition-colors duration-300">
@@ -296,10 +334,11 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
 
-              <ScrollAnimation animation="slide-in-left" delay={4}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 250 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-skill-lightBlue w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-skill-lightBlue/10 p-3 w-fit group-hover:bg-skill-lightBlue/20 transition-colors duration-300">
@@ -321,10 +360,11 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
 
-              <ScrollAnimation animation="fade-up" delay={5}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 300 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-skill-lightPurple w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-skill-lightPurple/10 p-3 w-fit group-hover:bg-skill-lightPurple/20 transition-colors duration-300">
@@ -346,10 +386,11 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
 
-              <ScrollAnimation animation="slide-in-right" delay={6}>
-                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+              <div data-scroll className="transform transition-all duration-700">
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+                      style={{ transform: `translateY(${Math.max(0, 350 - (scrollPosition - 1200) * 0.3)}px)` }}>
                   <div className="h-2 bg-primary w-full"></div>
                   <CardContent className="p-6 pt-8">
                     <div className="mb-4 rounded-full bg-primary/10 p-3 w-fit group-hover:bg-primary/20 transition-colors duration-300">
@@ -371,130 +412,134 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                 </Card>
-              </ScrollAnimation>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* How It Works Section - Enhanced */}
-        <section id="how-it-works" className="py-24 bg-muted/30">
-          <div className="container px-4">
-            <ScrollAnimation animation="fade-up">
-              <div className="text-center mb-16">
-                <div className="inline-block mb-3 px-4 py-1 rounded-full bg-secondary/20">
-                  <span className="text-sm font-medium text-secondary-foreground flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" />
-                    Simple Process
-                  </span>
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                  Your Journey to Better Skills
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Four simple steps to transform your professional capabilities with SkillMirror
-                </p>
+        <section id="how-it-works" className="py-24 bg-gradient-to-br from-background to-muted/30 relative overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(114,9,183,0.1),transparent_70%)]" 
+            style={{ transform: `translateY(${(scrollPosition - 2000) * 0.1}px)` }}
+          ></div>
+          
+          <div className="container px-4 relative">
+            <div data-scroll className="text-center mb-16">
+              <div className="inline-block mb-3 px-4 py-1 rounded-full bg-secondary/20">
+                <span className="text-sm font-medium text-secondary-foreground flex items-center gap-1">
+                  <Sparkles className="h-4 w-4" />
+                  Simple Process
+                </span>
               </div>
-            </ScrollAnimation>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                Your Journey to Better Skills
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Four simple steps to transform your professional capabilities with SkillMirror
+              </p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 relative">
-              {/* Connection Line */}
-              <div className="hidden md:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-skill-blue via-skill-purple to-skill-deepPurple transform -translate-y-1/2 z-0"></div>
+              <div className="hidden md:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-skill-blue via-skill-purple to-skill-deepPurple transform -translate-y-1/2 z-0"
+                   style={{ width: `${Math.min(100, (scrollPosition - 2100) * 0.05)}%`, transition: "width 0.5s ease-out" }}></div>
               
-              <ScrollAnimation animation="fade-up" delay={1}>
-                <div className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-blue/50 group">
-                  <div className="mb-4 rounded-full bg-skill-blue/10 p-4 group-hover:bg-skill-blue/20 transition-all duration-300">
-                    <div className="rounded-full bg-skill-blue text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">1</div>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-blue transition-colors duration-300">Select a Skill</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Choose from communication, leadership, negotiation, and more
-                  </p>
-                  <div className="mt-4 hidden md:flex items-center justify-center">
-                    <ChevronRight className="h-6 w-6 text-skill-blue group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
+              <div data-scroll className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-blue/50 group"
+                   style={{ transform: `translateY(${Math.max(0, 100 - (scrollPosition - 2100) * 0.3)}px) rotate(${Math.min(0, (scrollPosition - 2100) * 0.01)}deg)` }}>
+                <div className="mb-4 rounded-full bg-skill-blue/10 p-4 group-hover:bg-skill-blue/20 transition-all duration-300">
+                  <div className="rounded-full bg-skill-blue text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">1</div>
                 </div>
-              </ScrollAnimation>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-blue transition-colors duration-300">Select a Skill</h3>
+                <p className="text-sm text-muted-foreground">
+                  Choose from communication, leadership, negotiation, and more
+                </p>
+                <div className="mt-4 hidden md:flex items-center justify-center">
+                  <ChevronRight className="h-6 w-6 text-skill-blue group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
 
-              <ScrollAnimation animation="fade-up" delay={2}>
-                <div className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-purple/50 group">
-                  <div className="mb-4 rounded-full bg-skill-purple/10 p-4 group-hover:bg-skill-purple/20 transition-all duration-300">
-                    <div className="rounded-full bg-skill-purple text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">2</div>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-purple transition-colors duration-300">Enter Simulation</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Interact with AI colleagues in realistic workplace scenarios
-                  </p>
-                  <div className="mt-4 hidden md:flex items-center justify-center">
-                    <ChevronRight className="h-6 w-6 text-skill-purple group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
+              <div data-scroll className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-purple/50 group"
+                   style={{ transform: `translateY(${Math.max(0, 150 - (scrollPosition - 2100) * 0.3)}px) rotate(${Math.min(0, (scrollPosition - 2100) * 0.01)}deg)` }}>
+                <div className="mb-4 rounded-full bg-skill-purple/10 p-4 group-hover:bg-skill-purple/20 transition-all duration-300">
+                  <div className="rounded-full bg-skill-purple text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">2</div>
                 </div>
-              </ScrollAnimation>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-purple transition-colors duration-300">Enter Simulation</h3>
+                <p className="text-sm text-muted-foreground">
+                  Interact with AI colleagues in realistic workplace scenarios
+                </p>
+                <div className="mt-4 hidden md:flex items-center justify-center">
+                  <ChevronRight className="h-6 w-6 text-skill-purple group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
 
-              <ScrollAnimation animation="fade-up" delay={3}>
-                <div className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-deepPurple/50 group">
-                  <div className="mb-4 rounded-full bg-skill-deepPurple/10 p-4 group-hover:bg-skill-deepPurple/20 transition-all duration-300">
-                    <div className="rounded-full bg-skill-deepPurple text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">3</div>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-deepPurple transition-colors duration-300">Get Feedback</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Receive detailed analysis and actionable improvement tips
-                  </p>
-                  <div className="mt-4 hidden md:flex items-center justify-center">
-                    <ChevronRight className="h-6 w-6 text-skill-deepPurple group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
+              <div data-scroll className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-deepPurple/50 group"
+                   style={{ transform: `translateY(${Math.max(0, 200 - (scrollPosition - 2100) * 0.3)}px) rotate(${Math.min(0, (scrollPosition - 2100) * 0.01)}deg)` }}>
+                <div className="mb-4 rounded-full bg-skill-deepPurple/10 p-4 group-hover:bg-skill-deepPurple/20 transition-all duration-300">
+                  <div className="rounded-full bg-skill-deepPurple text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">3</div>
                 </div>
-              </ScrollAnimation>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-deepPurple transition-colors duration-300">Get Feedback</h3>
+                <p className="text-sm text-muted-foreground">
+                  Receive detailed analysis and actionable improvement tips
+                </p>
+                <div className="mt-4 hidden md:flex items-center justify-center">
+                  <ChevronRight className="h-6 w-6 text-skill-deepPurple group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
 
-              <ScrollAnimation animation="fade-up" delay={4}>
-                <div className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-lightBlue/50 group">
-                  <div className="mb-4 rounded-full bg-skill-lightBlue/10 p-4 group-hover:bg-skill-lightBlue/20 transition-all duration-300">
-                    <div className="rounded-full bg-skill-lightBlue text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">4</div>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-lightBlue transition-colors duration-300">Track Progress</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Monitor your growth with visual skill analytics and charts
-                  </p>
-                  <div className="mt-4 hidden md:flex items-center justify-center">
-                    <Check className="h-6 w-6 text-skill-lightBlue group-hover:scale-125 transition-transform duration-300" />
-                  </div>
+              <div data-scroll className="relative z-10 flex flex-col items-center text-center p-6 rounded-xl border border-border bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:border-skill-lightBlue/50 group"
+                   style={{ transform: `translateY(${Math.max(0, 250 - (scrollPosition - 2100) * 0.3)}px) rotate(${Math.min(0, (scrollPosition - 2100) * 0.01)}deg)` }}>
+                <div className="mb-4 rounded-full bg-skill-lightBlue/10 p-4 group-hover:bg-skill-lightBlue/20 transition-all duration-300">
+                  <div className="rounded-full bg-skill-lightBlue text-white w-12 h-12 flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform duration-300">4</div>
                 </div>
-              </ScrollAnimation>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-skill-lightBlue transition-colors duration-300">Track Progress</h3>
+                <p className="text-sm text-muted-foreground">
+                  Monitor your growth with visual skill analytics and charts
+                </p>
+                <div className="mt-4 hidden md:flex items-center justify-center">
+                  <Check className="h-6 w-6 text-skill-lightBlue group-hover:scale-125 transition-transform duration-300" />
+                </div>
+              </div>
             </div>
 
-            <ScrollAnimation animation="fade-up" delay={5}>
-              <div className="mt-16 text-center">
-                <Link to="/auth/signup">
-                  <Button size="lg" className="bg-gradient-to-r from-skill-blue to-skill-purple text-white hover:shadow-lg hover:shadow-skill-purple/30 transition-all duration-300 group relative overflow-hidden">
-                    <span className="relative z-10 flex items-center">
-                      Start Your First Simulation
-                      <Rocket className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </span>
-                  </Button>
-                </Link>
-              </div>
-            </ScrollAnimation>
+            <div data-scroll className="mt-16 text-center transform transition-all duration-700"
+                 style={{ transform: `translateY(${Math.max(0, 100 - (scrollPosition - 2300) * 0.3)}px)` }}>
+              <Link to="/auth/signup">
+                <Button size="lg" className="bg-gradient-to-r from-skill-blue to-skill-purple text-white hover:shadow-lg hover:shadow-skill-purple/30 transition-all duration-300 group relative overflow-hidden">
+                  <span className="relative z-10 flex items-center">
+                    Start Your First Simulation
+                    <Rocket className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="absolute top-20 right-10 w-20 h-20 rounded-full bg-skill-blue/10 animate-float" 
+                 style={{ transform: `translateY(${(scrollPosition - 2000) * 0.05}px)` }}></div>
+            <div className="absolute bottom-40 left-10 w-32 h-32 rounded-full bg-skill-purple/10 animate-float animate-delay-200" 
+                 style={{ transform: `translateY(${-(scrollPosition - 2000) * 0.08}px)` }}></div>
           </div>
         </section>
 
-        {/* Skills Grid Section */}
-        <section className="py-24 bg-gradient-to-br from-background to-muted/50">
+        <section className="py-24 bg-muted/30 relative overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(76,201,240,0.1),transparent_70%)]" 
+            style={{ transform: `translateY(${(scrollPosition - 2700) * 0.1}px)` }}
+          ></div>
+          
           <div className="container px-4">
-            <ScrollAnimation animation="fade-up">
-              <div className="text-center mb-16">
-                <div className="inline-block mb-3 px-4 py-1 rounded-full bg-skill-purple/10">
-                  <span className="text-sm font-medium text-skill-purple flex items-center gap-1">
-                    <Zap className="h-4 w-4" />
-                    Skill Catalog
-                  </span>
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                  Develop Skills That Matter
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Our platform offers training across a wide range of in-demand professional skills
-                </p>
+            <div data-scroll className="text-center mb-16">
+              <div className="inline-block mb-3 px-4 py-1 rounded-full bg-skill-purple/10">
+                <span className="text-sm font-medium text-skill-purple flex items-center gap-1">
+                  <Zap className="h-4 w-4" />
+                  Skill Catalog
+                </span>
               </div>
-            </ScrollAnimation>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                Develop Skills That Matter
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Our platform offers training across a wide range of in-demand professional skills
+              </p>
+            </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {[
@@ -509,24 +554,25 @@ export default function LandingPage() {
                 { name: "Strategic Thinking", icon: BrainCircuit, color: "skill-lightBlue" },
                 { name: "Emotional Intelligence", icon: Lightbulb, color: "skill-lightPurple" },
               ].map((skill, index) => (
-                <ScrollAnimation 
+                <div 
                   key={skill.name} 
-                  animation="fade-up" 
-                  delay={index * 0.1 + 1}
+                  data-scroll
+                  className={`flex flex-col items-center justify-center p-4 rounded-xl border border-border hover:border-${skill.color} bg-card hover:bg-${skill.color}/5 transition-all duration-300 text-center group transform`}
+                  style={{ 
+                    transform: `translateY(${Math.max(0, 50 + (index * 15) - (scrollPosition - 2800) * 0.3)}px)`,
+                    opacity: Math.min(1, Math.max(0, (scrollPosition - 2800 - (index * 30)) * 0.005))
+                  }}
                 >
-                  <div className={`flex flex-col items-center justify-center p-4 rounded-xl border border-border hover:border-${skill.color} bg-card hover:bg-${skill.color}/5 transition-all duration-300 text-center group`}>
-                    <div className={`mb-3 rounded-full bg-${skill.color}/10 p-3 group-hover:bg-${skill.color}/20 transition-colors duration-300`}>
-                      <skill.icon className={`h-6 w-6 text-${skill.color} group-hover:scale-110 transition-transform duration-300`} />
-                    </div>
-                    <h3 className={`text-sm font-medium group-hover:text-${skill.color} transition-colors duration-300`}>{skill.name}</h3>
+                  <div className={`mb-3 rounded-full bg-${skill.color}/10 p-3 group-hover:bg-${skill.color}/20 transition-colors duration-300`}>
+                    <skill.icon className={`h-6 w-6 text-${skill.color} group-hover:scale-110 transition-transform duration-300`} />
                   </div>
-                </ScrollAnimation>
+                  <h3 className={`text-sm font-medium group-hover:text-${skill.color} transition-colors duration-300`}>{skill.name}</h3>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Footer section with contact information */}
         <section className="py-16 bg-muted/30 border-t">
           <div className="container px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
