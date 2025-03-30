@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Lightbulb,
   LineChart,
-  MessagesSquare,
   Rocket,
   Check,
   ChevronRight,
@@ -21,43 +20,21 @@ import {
   User,
   FileText,
   Zap,
-  Mail,
-  Phone,
   GithubIcon,
   LinkedinIcon,
   TwitterIcon,
-  MapPinIcon,
   MessageSquare,
-  Send,
 } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { DisplayCardsDemo } from "@/components/display-cards-demo";
+import { FeedbackForm } from "@/components/FeedbackForm";
 
 export default function LandingPage() {
   const { user } = useAuth();
-  const [feedbackForm, setFeedbackForm] = useState({
-    name: "",
-    email: "",
-    message: ""
-  });
-  
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Feedback submitted! Thank you for your message.");
-    setFeedbackForm({ name: "", email: "", message: "" });
-  };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFeedbackForm(prev => ({ ...prev, [name]: value }));
-  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -74,6 +51,9 @@ export default function LandingPage() {
             </a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
               How It Works
+            </a>
+            <a href="#skills" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
+              Skills
             </a>
           </nav>
           <div className="flex items-center gap-4">
@@ -156,29 +136,10 @@ export default function LandingPage() {
                 </div>
               </ScrollAnimation>
               
-              {/* Key Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                <ScrollAnimation animation="fade-up" delay={4}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
-                    <h3 className="text-2xl font-bold mb-1">500+</h3>
-                    <p className="text-white/80">Workplace Scenarios</p>
-                  </div>
-                </ScrollAnimation>
-                
-                <ScrollAnimation animation="fade-up" delay={5}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
-                    <h3 className="text-2xl font-bold mb-1">94%</h3>
-                    <p className="text-white/80">Skill Improvement</p>
-                  </div>
-                </ScrollAnimation>
-                
-                <ScrollAnimation animation="fade-up" delay={6}>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 transform hover:translate-y-[-5px] hover:bg-white/20 transition-all duration-500 shadow-lg hover:shadow-white/20">
-                    <h3 className="text-2xl font-bold mb-1">12K+</h3>
-                    <p className="text-white/80">Active Users</p>
-                  </div>
-                </ScrollAnimation>
-              </div>
+              {/* Display Cards Demo */}
+              <ScrollAnimation animation="scale-in" delay={4}>
+                <DisplayCardsDemo />
+              </ScrollAnimation>
             </div>
           </div>
           
@@ -465,7 +426,7 @@ export default function LandingPage() {
         </section>
 
         {/* Skills Grid Section */}
-        <section className="py-24 bg-gradient-to-br from-background to-muted/50">
+        <section id="skills" className="py-24 bg-gradient-to-br from-background to-muted/50">
           <div className="container px-4">
             <ScrollAnimation animation="fade-up">
               <div className="text-center mb-16">
@@ -486,7 +447,7 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {[
-                { name: "Communication", icon: MessagesSquare, color: "skill-blue" },
+                { name: "Communication", icon: MessageSquare, color: "skill-blue" },
                 { name: "Leadership", icon: User, color: "skill-purple" },
                 { name: "Negotiation", icon: Briefcase, color: "skill-deepPurple" },
                 { name: "Presentation", icon: FileText, color: "skill-lightBlue" },
@@ -548,28 +509,15 @@ export default function LandingPage() {
                   <li>
                     <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</a>
                   </li>
+                  <li>
+                    <a href="#skills" className="text-muted-foreground hover:text-primary transition-colors">Skills</a>
+                  </li>
                 </ul>
               </div>
 
               <div>
                 <h3 className="font-medium text-lg mb-4">Contact</h3>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <MapPinIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">123 Innovation Street, San Francisco, CA 94103</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-primary flex-shrink-0" />
-                    <a href="mailto:hello@skillmirror.ai" className="text-muted-foreground hover:text-primary transition-colors">
-                      hello@skillmirror.ai
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-primary flex-shrink-0" />
-                    <a href="tel:+15551234567" className="text-muted-foreground hover:text-primary transition-colors">
-                      +1 (555) 123-4567
-                    </a>
-                  </li>
                   <li className="flex items-center gap-2">
                     <GithubIcon className="h-5 w-5 text-primary flex-shrink-0" />
                     <a href="https://github.com/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
@@ -588,53 +536,16 @@ export default function LandingPage() {
                       LinkedIn
                     </a>
                   </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Feedback Form */}
-            <div className="mt-12 pt-8 border-t border-border/40">
-              <div className="max-w-lg mx-auto">
-                <h3 className="text-xl font-semibold mb-4">Send Us Feedback</h3>
-                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Input 
-                        placeholder="Your Name" 
-                        name="name" 
-                        value={feedbackForm.name} 
-                        onChange={handleInputChange} 
-                        className="bg-background/50"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Input 
-                        type="email" 
-                        placeholder="Your Email" 
-                        name="email" 
-                        value={feedbackForm.email} 
-                        onChange={handleInputChange} 
-                        className="bg-background/50"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Textarea 
-                      placeholder="Your Message" 
-                      name="message" 
-                      value={feedbackForm.message} 
-                      onChange={handleInputChange} 
-                      className="min-h-[120px] bg-background/50"
-                      required
+                  <li className="mt-4">
+                    <FeedbackForm 
+                      trigger={
+                        <Button variant="outline" size="sm" className="w-full">
+                          Leave Feedback
+                        </Button>
+                      }
                     />
-                  </div>
-                  <Button type="submit" className="w-full sm:w-auto">
-                    Send Message
-                    <Send className="ml-2 h-4 w-4" />
-                  </Button>
-                </form>
+                  </li>
+                </ul>
               </div>
             </div>
 
