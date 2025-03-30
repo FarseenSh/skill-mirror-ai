@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -177,6 +178,32 @@
   }
 }
 
+/* New animations */
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-15deg) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(114, 9, 183, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(114, 9, 183, 0.8);
+  }
+}
+
 .animate-fade-up {
   animation: fadeUp 0.7s ease forwards;
 }
@@ -195,6 +222,41 @@
 
 .animate-slide-in-left {
   animation: slideInLeft 0.7s ease forwards;
+}
+
+.animate-rotate-in {
+  animation: rotateIn 0.7s ease forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+  background-size: 468px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s infinite ease-in-out;
+}
+
+/* Custom animation durations */
+.animate-duration-faster {
+  animation-duration: 0.3s;
+}
+
+.animate-duration-fast {
+  animation-duration: 0.5s;
+}
+
+.animate-duration-normal {
+  animation-duration: 1s;
+}
+
+.animate-duration-slow {
+  animation-duration: 2s;
+}
+
+.animate-duration-slower {
+  animation-duration: 3s;
 }
 
 /* Particle animations */
