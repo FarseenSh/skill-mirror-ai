@@ -33,7 +33,7 @@ export default function DashboardPage() {
           </Card>
         </Link>
 
-        <Link to="/app/skills-dashboard" className="cursor-pointer">
+        <Link to="/app/skills" className="cursor-pointer">
           <Card className="dashboard-card hover:shadow-md transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg font-medium">Skills Dashboard</CardTitle>

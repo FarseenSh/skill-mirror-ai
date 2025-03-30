@@ -38,7 +38,7 @@ export function AppSidebar() {
     },
     {
       title: "Skills Dashboard",
-      path: "/app/skills-dashboard",
+      path: "/app/skills",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {

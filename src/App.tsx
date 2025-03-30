@@ -54,9 +54,9 @@ function App() {
                 <Route path="resources" element={<ResourcesPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="skills" element={<SkillsDashboardPage />} />
-                <Route path="career" element={<CareerPathsPage />} />
+                <Route path="career-paths" element={<CareerPathsPage />} />
                 <Route path="workspace" element={<WorkspacePage />} />
-                <Route path="interview" element={<InterviewPracticePage />} />
+                <Route path="interview-practice" element={<InterviewPracticePage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
