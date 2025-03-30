@@ -21,6 +21,12 @@ import {
   User,
   FileText,
   Zap,
+  Mail,
+  Phone,
+  GithubIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  MapPinIcon,
 } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -165,24 +171,6 @@ export default function LandingPage() {
             <div className="w-8 h-12 rounded-full border-2 border-white/50 flex items-start justify-center p-1 animate-pulse">
               <div className="w-1 h-2 bg-white/80 rounded-full animate-[bounce_1.5s_ease_infinite]"></div>
             </div>
-          </div>
-        </section>
-
-        {/* Featured In Section */}
-        <section className="py-12 bg-muted/20">
-          <div className="container px-4">
-            <ScrollAnimation animation="fade-up">
-              <div className="text-center mb-6">
-                <p className="text-sm uppercase text-muted-foreground tracking-wider">Trusted by professionals from</p>
-              </div>
-              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                <img src="https://placeholder.pics/svg/150x50/DEDEDE/555555/COMPANY" alt="Company Logo" className="h-6 md:h-8 opacity-50 hover:opacity-80 transition-opacity" />
-                <img src="https://placeholder.pics/svg/150x50/DEDEDE/555555/BRAND" alt="Brand Logo" className="h-6 md:h-8 opacity-50 hover:opacity-80 transition-opacity" />
-                <img src="https://placeholder.pics/svg/150x50/DEDEDE/555555/ENTERPRISE" alt="Enterprise Logo" className="h-6 md:h-8 opacity-50 hover:opacity-80 transition-opacity" />
-                <img src="https://placeholder.pics/svg/150x50/DEDEDE/555555/TECH" alt="Tech Logo" className="h-6 md:h-8 opacity-50 hover:opacity-80 transition-opacity" />
-                <img src="https://placeholder.pics/svg/150x50/DEDEDE/555555/CORP" alt="Corp Logo" className="h-6 md:h-8 opacity-50 hover:opacity-80 transition-opacity" />
-              </div>
-            </ScrollAnimation>
           </div>
         </section>
 
@@ -506,6 +494,105 @@ export default function LandingPage() {
                   </div>
                 </ScrollAnimation>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer section with contact information */}
+        <section className="py-16 bg-muted/30 border-t">
+          <div className="container px-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div className="md:col-span-1">
+                <div className="flex items-center gap-2 mb-4">
+                  <Logo size="md" className="shadow-lg" />
+                  <span className="text-xl font-bold">SkillMirror</span>
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  Elevate your professional skills with AI-powered simulations and personalized feedback.
+                </p>
+                <div className="flex space-x-4">
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                    <TwitterIcon className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                    <LinkedinIcon className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                    <GithubIcon className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-lg mb-4">Platform</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">Features</a>
+                  </li>
+                  <li>
+                    <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</a>
+                  </li>
+                  <li>
+                    <a href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">Pricing</a>
+                  </li>
+                  <li>
+                    <a href="#testimonials" className="text-muted-foreground hover:text-primary transition-colors">Testimonials</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-lg mb-4">Company</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">About Us</a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Careers</a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Blog</a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-lg mb-4">Contact</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <MapPinIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">123 Innovation Street, San Francisco, CA 94103</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-primary flex-shrink-0" />
+                    <a href="mailto:hello@skillmirror.ai" className="text-muted-foreground hover:text-primary transition-colors">
+                      hello@skillmirror.ai
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+                    <a href="tel:+15551234567" className="text-muted-foreground hover:text-primary transition-colors">
+                      +1 (555) 123-4567
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-12 pt-8 border-t border-border/40">
+              <div className="flex flex-col md:flex-row justify-between items-center">
+                <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+                  © {new Date().getFullYear()} SkillMirror. All rights reserved.
+                </p>
+                <div className="flex gap-4 text-sm">
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Cookies</a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
