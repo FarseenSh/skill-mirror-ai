@@ -31,7 +31,7 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
       </div>
       <div className="flex items-center gap-4">
         <Button
-          variant="primary"
+          variant="default"
           className="bg-blue-600 hover:bg-blue-700"
           onClick={onTogglePause}
         >
