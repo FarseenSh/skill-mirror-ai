@@ -56,7 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
       setIsLoading(true);
-      const { user: authUser } = await auth.signIn(email, password, { persistSession: rememberMe });
+      // The error is here - we're passing 3 arguments but the function only accepts 2
+      // Let's check the auth.signIn implementation in supabase.ts and fix it
+      const { user: authUser } = await auth.signIn(email, password);
       
       if (!authUser) {
         throw new Error("Authentication failed");

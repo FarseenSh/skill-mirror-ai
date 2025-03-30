@@ -1,3 +1,4 @@
+
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
@@ -14,10 +15,11 @@ export const auth = {
     return data;
   },
   
-  signIn: async (email: string, password: string) => {
+  signIn: async (email: string, password: string, options?: { persistSession?: boolean }) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options
     });
     
     if (error) throw error;
