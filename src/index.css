@@ -94,15 +94,24 @@
   * {
     @apply border-border;
   }
+  
+  html, body {
+    @apply w-full max-w-full overflow-x-hidden;
+  }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground w-full max-w-full;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  #root {
+    @apply w-full max-w-full;
   }
 }
 
 @layer components {
   .hero-section {
-    @apply relative overflow-hidden bg-gradient-to-r from-skill-blue to-skill-purple;
+    @apply relative overflow-hidden bg-gradient-to-r from-skill-blue to-skill-purple w-full;
     min-height: 80vh;
   }
   

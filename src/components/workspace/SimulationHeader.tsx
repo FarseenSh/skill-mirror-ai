@@ -49,9 +49,9 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
           )}
         </Button>
         <Link to="/">
-          <Button variant="outline" size="sm" className="flex items-center">
+          <Button variant="outline" size="sm" className="flex items-center bg-white dark:bg-gray-800 border-primary hover:bg-primary/10">
             <Home className="h-4 w-4 mr-2" />
-            Back to Landing
+            <span className="font-medium">Back to Landing</span>
           </Button>
         </Link>
         {userName && (
