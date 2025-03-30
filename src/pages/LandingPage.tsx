@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -36,7 +37,7 @@ export default function LandingPage() {
   const { user } = useAuth();
   
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
+    <div className="flex flex-col min-h-screen">
       {/* Navigation */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
@@ -81,9 +82,9 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-full">
+      <main className="flex-1">
         {/* Hero Section - Enhanced with more targeted content */}
-        <section className="relative overflow-hidden w-full">
+        <section className="relative overflow-hidden">
           {/* 3D Geometric Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-skill-blue via-skill-purple to-skill-deepPurple opacity-90">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2784&q=80')] bg-cover bg-center opacity-10"></div>
@@ -101,7 +102,7 @@ export default function LandingPage() {
           </div>
           
           {/* Hero Content */}
-          <div className="container relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-32 text-center text-white z-10 w-full max-w-full mx-auto">
+          <div className="container relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-32 text-center text-white z-10">
             <div className="max-w-5xl mx-auto">
               <ScrollAnimation animation="fade-in">
                 <div className="inline-block mb-3 px-4 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-pulse">
@@ -151,7 +152,7 @@ export default function LandingPage() {
         </section>
 
         {/* Key Features Section - Redesigned */}
-        <section id="features" className="py-24 bg-muted/30 w-full">
+        <section id="features" className="py-24 bg-muted/30">
           <div className="container px-4">
             <ScrollAnimation animation="fade-up">
               <div className="text-center mb-16">
@@ -325,7 +326,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section - Enhanced */}
-        <section id="how-it-works" className="py-24 bg-muted/30 w-full">
+        <section id="how-it-works" className="py-24 bg-muted/30">
           <div className="container px-4">
             <ScrollAnimation animation="fade-up">
               <div className="text-center mb-16">
@@ -425,7 +426,7 @@ export default function LandingPage() {
         </section>
 
         {/* Skills Grid Section */}
-        <section id="skills" className="py-24 bg-gradient-to-br from-background to-muted/50 w-full">
+        <section id="skills" className="py-24 bg-gradient-to-br from-background to-muted/50">
           <div className="container px-4">
             <ScrollAnimation animation="fade-up">
               <div className="text-center mb-16">
@@ -475,7 +476,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer section with contact information */}
-        <section className="py-16 bg-muted/30 border-t w-full">
+        <section className="py-16 bg-muted/30 border-t">
           <div className="container px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1">

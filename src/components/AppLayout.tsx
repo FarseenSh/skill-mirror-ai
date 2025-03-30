@@ -14,7 +14,7 @@ export default function AppLayout() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Logo size="lg" className="animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
@@ -31,11 +31,11 @@ export default function AppLayout() {
     <>
       <GlobalKeyboardShortcuts />
       <SidebarProvider defaultOpen={true}>
-        <div className="flex h-screen antialiased text-foreground bg-background w-full max-w-full overflow-hidden">
+        <div className="flex h-screen antialiased text-foreground bg-background w-full overflow-hidden">
           <AppSidebar />
-          <div className="flex-1 flex flex-col overflow-hidden w-full">
+          <div className="flex-1 flex flex-col overflow-hidden">
             <AppTopBar />
-            <main className="flex-1 pt-6 px-4 md:px-8 overflow-auto w-full">
+            <main className="flex-1 pt-6 px-4 md:px-8 overflow-auto">
               <Outlet />
             </main>
           </div>
