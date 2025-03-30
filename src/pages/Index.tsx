@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { DisplayCardsDemo } from "@/components/ui/display-cards-demo";
 import { 
   BrainCircuit, 
   BarChart, 
@@ -36,6 +37,12 @@ const Index = () => {
               Create Account
             </Button>
           </Link>
+        </div>
+        
+        {/* Display Cards Demo */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6">Featured Content</h2>
+          <DisplayCardsDemo />
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
@@ -94,7 +101,7 @@ const Index = () => {
             Join SkillMirror today and start tracking your professional growth journey.
           </p>
           <Link to="/auth/signup">
-            <Button size="lg" className="animate-pulse">
+            <Button size="lg">
               Get Started Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
