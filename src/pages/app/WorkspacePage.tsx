@@ -557,118 +557,118 @@ export default function WorkspacePage() {
                         <span>Skills</span>
                       </TabsTrigger>
                     </TabsList>
+                  
+                    <TabsContent value="chat" className="m-0">
+                      <ScrollArea className="h-[500px] p-4">
+                        <div className="space-y-4">
+                          {messages.map((msg, i) => {
+                            if (msg.sender_type === 'system') {
+                              return (
+                                <div key={msg.id || i} className="flex justify-center">
+                                  <div className="bg-muted rounded-md px-3 py-1 text-xs text-muted-foreground">
+                                    {msg.content}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            
+                            return (
+                              <ChatMessage 
+                                key={msg.id || i}
+                                id={msg.id || `msg-${i}`}
+                                content={msg.content}
+                                senderType={msg.sender_type}
+                                senderName={msg.sender_type === 'user' ? (user?.profile?.full_name || 'You') : currentColleague.name}
+                                senderAvatar={msg.sender_type === 'user' ? user?.profile?.avatar_url : currentColleague.avatar_url || undefined}
+                                timestamp={new Date(msg.created_at || Date.now())}
+                                audioUrl={msg.sender_type === 'ai' && audioCaching[msg.content] ? audioCaching[msg.content] : undefined}
+                                status={msg.sender_type === 'user' ? msg.status : undefined}
+                              />
+                            );
+                          })}
+                          
+                          {isAiTyping && (
+                            <div className="flex justify-start">
+                              <div className="bg-muted rounded-lg p-3 flex items-center space-x-2 max-w-[80%]">
+                                <Avatar className="h-8 w-8">
+                                  <AvatarImage src={currentColleague.avatar_url || undefined} />
+                                  <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex space-x-1">
+                                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <div ref={messageEndRef} />
+                        </div>
+                      </ScrollArea>
+                      <div className="p-4 border-t">
+                        <div className="flex gap-2">
+                          <Textarea
+                            placeholder="Type your message..."
+                            className="min-h-10"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessage();
+                              }
+                            }}
+                            disabled={isLoading || isAiTyping}
+                          />
+                          <Button 
+                            size="icon" 
+                            onClick={() => sendMessage()}
+                            disabled={isLoading || isAiTyping || !message.trim()}
+                          >
+                            {isLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="tasks" className="m-0 p-4">
+                      <TaskPanel 
+                        tasks={tasks} 
+                        onSelectTask={handleTaskSelection}
+                        selectedTaskId={selectedTask}
+                      />
+                    </TabsContent>
+                    
+                    <TabsContent value="code" className="m-0 p-4">
+                      {selectedTask ? (
+                        <CodeEditor 
+                          initialCode={currentTaskCode}
+                          taskId={selectedTask}
+                          onCodeChange={handleCodeChange}
+                          onSaveCode={handleSaveCode}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-[400px]">
+                          <FileCode size={48} className="text-muted-foreground mb-4" />
+                          <h3 className="text-xl font-medium mb-2">No Task Selected</h3>
+                          <p className="text-muted-foreground text-center max-w-md">
+                            Select a task from the Tasks tab to view and edit code.
+                          </p>
+                        </div>
+                      )}
+                    </TabsContent>
+                    
+                    <TabsContent value="skills" className="m-0 p-4">
+                      <SkillProgressTracker skills={skills} />
+                    </TabsContent>
                   </Tabs>
                 </div>
               </CardHeader>
-              
-              <TabsContent value="chat" className="m-0">
-                <ScrollArea className="h-[500px] p-4">
-                  <div className="space-y-4">
-                    {messages.map((msg, i) => {
-                      if (msg.sender_type === 'system') {
-                        return (
-                          <div key={msg.id || i} className="flex justify-center">
-                            <div className="bg-muted rounded-md px-3 py-1 text-xs text-muted-foreground">
-                              {msg.content}
-                            </div>
-                          </div>
-                        );
-                      }
-                      
-                      return (
-                        <ChatMessage 
-                          key={msg.id || i}
-                          id={msg.id || `msg-${i}`}
-                          content={msg.content}
-                          senderType={msg.sender_type}
-                          senderName={msg.sender_type === 'user' ? (user?.profile?.full_name || 'You') : currentColleague.name}
-                          senderAvatar={msg.sender_type === 'user' ? user?.profile?.avatar_url : currentColleague.avatar_url || undefined}
-                          timestamp={new Date(msg.created_at || Date.now())}
-                          audioUrl={msg.sender_type === 'ai' && audioCaching[msg.content] ? audioCaching[msg.content] : undefined}
-                          status={msg.sender_type === 'user' ? msg.status : undefined}
-                        />
-                      );
-                    })}
-                    
-                    {isAiTyping && (
-                      <div className="flex justify-start">
-                        <div className="bg-muted rounded-lg p-3 flex items-center space-x-2 max-w-[80%]">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={currentColleague.avatar_url || undefined} />
-                            <AvatarFallback>{getInitials(currentColleague.name)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex space-x-1">
-                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }}></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div ref={messageEndRef} />
-                  </div>
-                </ScrollArea>
-                <div className="p-4 border-t">
-                  <div className="flex gap-2">
-                    <Textarea
-                      placeholder="Type your message..."
-                      className="min-h-10"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          sendMessage();
-                        }
-                      }}
-                      disabled={isLoading || isAiTyping}
-                    />
-                    <Button 
-                      size="icon" 
-                      onClick={() => sendMessage()}
-                      disabled={isLoading || isAiTyping || !message.trim()}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Send className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="tasks" className="m-0 p-4">
-                <TaskPanel 
-                  tasks={tasks} 
-                  onSelectTask={handleTaskSelection}
-                  selectedTaskId={selectedTask}
-                />
-              </TabsContent>
-              
-              <TabsContent value="code" className="m-0 p-4">
-                {selectedTask ? (
-                  <CodeEditor 
-                    initialCode={currentTaskCode}
-                    taskId={selectedTask}
-                    onCodeChange={handleCodeChange}
-                    onSaveCode={handleSaveCode}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[400px]">
-                    <FileCode size={48} className="text-muted-foreground mb-4" />
-                    <h3 className="text-xl font-medium mb-2">No Task Selected</h3>
-                    <p className="text-muted-foreground text-center max-w-md">
-                      Select a task from the Tasks tab to view and edit code.
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="skills" className="m-0 p-4">
-                <SkillProgressTracker skills={skills} />
-              </TabsContent>
             </>
           )}
         </Card>
