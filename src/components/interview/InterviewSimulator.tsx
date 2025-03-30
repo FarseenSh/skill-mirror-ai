@@ -61,16 +61,25 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
     try {
       setIsLoading(true);
       
+      const interviewerTypeMap = {
+        technical_male: "technical",
+        technical_female: "technical",
+        coach: "coach"
+      };
+
+      const mappedInterviewerType = interviewerTypeMap[interviewData.interviewer] || "technical";
+      
       const savedInterview = await interviewsManager.createInterview({
         user_id: user.id,
         title: `${interviewData.jobTitle} - ${interviewData.interviewType}`,
         job_title: interviewData.jobTitle,
-        interviewer_type: interviewData.interviewer,
+        interviewer_type: mappedInterviewerType,
         settings: JSON.stringify({
           difficultyLevel: interviewData.difficultyLevel,
           focusAreas: interviewData.focusAreas,
           timeLimit: interviewData.timeLimit,
-          customQuestions: interviewData.customQuestions
+          customQuestions: interviewData.customQuestions,
+          originalInterviewerType: interviewData.interviewer
         }),
         status: "in_progress",
       });
@@ -278,8 +287,8 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         startTimer();
       }
       
-      const voiceId = currentInterview ? 
-        getVoiceIdForInterviewer(currentInterview.interviewer_type) : 
+      const voiceId = currentInterview?.settings?.originalInterviewerType ?
+        getVoiceIdForInterviewer(currentInterview.settings.originalInterviewerType) :
         ELEVEN_LABS_VOICES.INTERVIEWER_MALE.voice_id;
       
       generateQuestionAudio(questions[nextIndex].question, voiceId);
@@ -305,8 +314,8 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         startTimer();
       }
       
-      const voiceId = currentInterview ? 
-        getVoiceIdForInterviewer(currentInterview.interviewer_type) : 
+      const voiceId = currentInterview?.settings?.originalInterviewerType ?
+        getVoiceIdForInterviewer(currentInterview.settings.originalInterviewerType) :
         ELEVEN_LABS_VOICES.INTERVIEWER_MALE.voice_id;
       
       generateQuestionAudio(questions[prevIndex].question, voiceId);
@@ -426,7 +435,7 @@ export function InterviewSimulator({ selectedInterview, onExit }: InterviewSimul
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={`/avatars/${currentInterview?.interviewer_type || 'default'}.jpg`} />
+              <AvatarImage src={`/avatars/${currentInterview?.settings?.originalInterviewerType || 'default'}.jpg`} />
               <AvatarFallback>AI</AvatarFallback>
             </Avatar>
             <div>
