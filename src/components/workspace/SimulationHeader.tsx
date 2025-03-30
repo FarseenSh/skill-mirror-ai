@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Pause, Play, Clock } from "lucide-react";
+import { Pause, Play, Clock, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface SimulationHeaderProps {
   simulationDay: number;
@@ -47,6 +48,12 @@ export const SimulationHeader: React.FC<SimulationHeaderProps> = ({
             </>
           )}
         </Button>
+        <Link to="/">
+          <Button variant="outline" size="sm">
+            <Home className="h-4 w-4 mr-2" />
+            Back to Landing
+          </Button>
+        </Link>
         {userName && (
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
