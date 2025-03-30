@@ -1,3 +1,4 @@
+
 // Supabase client integration for SkillMirror
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
@@ -15,13 +16,17 @@ export const auth = {
   },
   
   signIn: async (email: string, password: string, options?: { persistSession?: boolean }) => {
-    if (options?.persistSession !== undefined) {
-      supabase.auth.setAutoRefreshToken(options.persistSession);
-    }
-    
+    // We need to use the correct method to handle persistent sessions
+    // In Supabase v2, we need to use the options parameter in signInWithPassword
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: {
+        // Pass the persistSession flag if provided
+        ...(options?.persistSession !== undefined && { 
+          persistSession: options.persistSession 
+        })
+      }
     });
     
     if (error) throw error;

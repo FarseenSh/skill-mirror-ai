@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, userProfiles } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
       setIsLoading(true);
-      // Now correctly pass the rememberMe option to our auth.signIn function
+      // Correctly pass the rememberMe option to our auth.signIn function
       const { user: authUser } = await auth.signIn(email, password, { persistSession: rememberMe });
       
       if (!authUser) {
