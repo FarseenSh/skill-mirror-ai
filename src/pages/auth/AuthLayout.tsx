@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export default function AuthLayout() {
   return (
     <div className="min-h-screen">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-6">
         <ThemeToggle variant="minimal" />
       </div>
       <Outlet />
