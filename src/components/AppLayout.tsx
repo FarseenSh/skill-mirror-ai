@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppTopBar } from "@/components/AppTopBar";
 import { useAuth } from "@/components/AuthProvider";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
@@ -11,7 +11,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 export default function AppLayout() {
   const { user, isLoading } = useAuth();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -34,9 +33,9 @@ export default function AppLayout() {
       <SidebarProvider>
         <div className="flex h-screen antialiased text-foreground bg-background w-full">
           <AppSidebar />
-          <div className="flex-1 flex-col">
+          <div className="flex-1 flex flex-col">
             <AppTopBar />
-            <main className="flex-1 pt-6 px-4 md:px-8">
+            <main className="flex-1 pt-6 px-4 md:px-8 overflow-auto">
               <Outlet />
             </main>
           </div>
