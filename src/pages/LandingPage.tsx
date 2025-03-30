@@ -27,15 +27,37 @@ import {
   LinkedinIcon,
   TwitterIcon,
   MapPinIcon,
+  MessageSquare,
+  Send,
 } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const [feedbackForm, setFeedbackForm] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+  
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Feedback submitted! Thank you for your message.");
+    setFeedbackForm({ name: "", email: "", message: "" });
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFeedbackForm(prev => ({ ...prev, [name]: value }));
+  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -52,12 +74,6 @@ export default function LandingPage() {
             </a>
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
               How It Works
-            </a>
-            <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Testimonials
-            </a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-primary after:transition-all after:duration-300">
-              Pricing
             </a>
           </nav>
           <div className="flex items-center gap-4">
@@ -501,7 +517,7 @@ export default function LandingPage() {
         {/* Footer section with contact information */}
         <section className="py-16 bg-muted/30 border-t">
           <div className="container px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
                   <Logo size="md" className="shadow-lg" />
@@ -532,30 +548,6 @@ export default function LandingPage() {
                   <li>
                     <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">How It Works</a>
                   </li>
-                  <li>
-                    <a href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">Pricing</a>
-                  </li>
-                  <li>
-                    <a href="#testimonials" className="text-muted-foreground hover:text-primary transition-colors">Testimonials</a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-lg mb-4">Company</h3>
-                <ul className="space-y-2">
-                  <li>
-                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">About Us</a>
-                  </li>
-                  <li>
-                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Careers</a>
-                  </li>
-                  <li>
-                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Blog</a>
-                  </li>
-                  <li>
-                    <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
-                  </li>
                 </ul>
               </div>
 
@@ -578,20 +570,81 @@ export default function LandingPage() {
                       +1 (555) 123-4567
                     </a>
                   </li>
+                  <li className="flex items-center gap-2">
+                    <GithubIcon className="h-5 w-5 text-primary flex-shrink-0" />
+                    <a href="https://github.com/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
+                      GitHub
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <TwitterIcon className="h-5 w-5 text-primary flex-shrink-0" />
+                    <a href="https://twitter.com/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
+                      Twitter
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <LinkedinIcon className="h-5 w-5 text-primary flex-shrink-0" />
+                    <a href="https://linkedin.com/company/skillmirror" className="text-muted-foreground hover:text-primary transition-colors">
+                      LinkedIn
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
 
+            {/* Feedback Form */}
             <div className="mt-12 pt-8 border-t border-border/40">
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-                  © {new Date().getFullYear()} SkillMirror. All rights reserved.
-                </p>
-                <div className="flex gap-4 text-sm">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Cookies</a>
-                </div>
+              <div className="max-w-lg mx-auto">
+                <h3 className="text-xl font-semibold mb-4">Send Us Feedback</h3>
+                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Input 
+                        placeholder="Your Name" 
+                        name="name" 
+                        value={feedbackForm.name} 
+                        onChange={handleInputChange} 
+                        className="bg-background/50"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Input 
+                        type="email" 
+                        placeholder="Your Email" 
+                        name="email" 
+                        value={feedbackForm.email} 
+                        onChange={handleInputChange} 
+                        className="bg-background/50"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Textarea 
+                      placeholder="Your Message" 
+                      name="message" 
+                      value={feedbackForm.message} 
+                      onChange={handleInputChange} 
+                      className="min-h-[120px] bg-background/50"
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full sm:w-auto">
+                    Send Message
+                    <Send className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+              </div>
+            </div>
+
+            <div className="mt-12 text-center">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} SkillMirror. All rights reserved.
+              </p>
+              <div className="flex justify-center gap-4 text-sm mt-2">
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
               </div>
             </div>
           </div>

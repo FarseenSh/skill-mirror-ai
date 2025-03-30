@@ -5,6 +5,7 @@ import { AppTopBar } from "@/components/AppTopBar";
 import { useAuth } from "@/components/AuthProvider";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { GlobalKeyboardShortcuts } from '@/components/GlobalKeyboardShortcuts';
+import { Logo } from "@/components/Logo";
 
 export default function AppLayout() {
   const { user, isLoading } = useAuth();
@@ -12,7 +13,14 @@ export default function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Logo size="lg" className="animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
